@@ -42,8 +42,10 @@ namespace NekraliusDevelopmentStudio
             DrawTerrainMesh(grid, currentMap);
             DrawEdgeMesh(grid, currentMap);
             DrawTexture(grid, currentMap);
+            GenerateAllStructures(currentMap);
         }
 
+        #region - Noise Map Generation -
         private void GenerateNoiseMap(MapData data)
         {
             int size = data.size;
@@ -61,6 +63,9 @@ namespace NekraliusDevelopmentStudio
             }
             this.noiseMap = noiseMap;
         }
+        #endregion
+
+        #region - Falloff Map Generation -
         private void GeneraterFallofMap(MapData data)
         {
             int size = data.size;
@@ -77,6 +82,9 @@ namespace NekraliusDevelopmentStudio
             }
             this.falloffMap = falloffMap;
         }
+        #endregion
+
+        #region - Terrain Mesh Drawning -
         private void DrawTerrainMesh(Cell[,] grid, MapData data)
         {
             int size = data.size;
@@ -121,11 +129,15 @@ namespace NekraliusDevelopmentStudio
 
             MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
         }
+        #endregion
+
+        #region - Edge Mesh Generation -
         void DrawEdgeMesh(Cell[,] grid, MapData data)
         {
             int size = data.size;
 
             Mesh mesh = new Mesh();
+
             List<Vector3> vertices = new List<Vector3>();
             List<int> triangles = new List<int>();
             for (int y = 0; y < size; y++)
@@ -219,6 +231,9 @@ namespace NekraliusDevelopmentStudio
             MeshRenderer meshRenderer = edgeObj.AddComponent<MeshRenderer>();
             meshRenderer.material = edgeMaterial;
         }
+        #endregion
+
+        #region - Texture Generation
         void DrawTexture(Cell[,] grid, MapData data)
         {
             int size = data.size;
@@ -242,25 +257,93 @@ namespace NekraliusDevelopmentStudio
             meshRenderer.material = terrainMaterial;
             meshRenderer.material.mainTexture = texture;
         }
+        #endregion
 
+        #region - Objects and Structures Placement -
 
-
-        private void OnDrawGizmos()
+        private void GenerateAllStructures(MapData data)
         {
-            if (!Application.isPlaying) return;
-            for (int y = 0; y < currentMap.size; y++)
-            {
-                for (int x = 0; x < currentMap.size; x++)
-                {
-                    Cell cell = grid[x, y];
-                    Color newColor = cell.cellType.blockColor;
-                    Gizmos.color = newColor;
-
-                    Vector3 pos = new Vector3(x, 0, y);
-                    Gizmos.DrawCube(pos, Vector3.one);
-                }
-            }
+            foreach(ProceduralStructures structureToGenerate in data.mapStructures) GenerateStructure(grid, data, structureToGenerate);
         }
 
+        private void GenerateStructure(Cell[,] grid, MapData data, ProceduralStructures structure)
+        {
+            int size = data.size;
+            float scale = structure.noiseScale;
+            float[,] noiseMap = new float[size, size];
+            (float xOffset, float yOffset) = (Random.Range(-10000f, 10000f), Random.Range(-10000, 10000));
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float noiseValuue = Mathf.PerlinNoise(x * scale + xOffset, y * scale + yOffset);
+                    noiseMap[x, y] = noiseValuue;
+                }
+            }
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    Cell cell = grid[x, y];
+                    if (!cell.cellType.CheckIfWater() && !cell.cellOcupied)
+                    {
+                        float v = Random.Range(0f, structure.density);
+                        if (noiseMap[x,y] < v)
+                        {
+                            GameObject structureSpawned = Instantiate(structure.structurePrefab, transform);
+                            structureSpawned.transform.position = new Vector3(x, 0, y);
+                            structureSpawned.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360f), 0);
+                            structureSpawned.transform.localScale = Vector3.one * Random.Range(0.8f, 1.2f);
+                            if (structure.structureSize == 1) cell.cellOcupied = true;
+                            else
+                            {
+                                if (structure.structureSize == 2)
+                                {
+                                    cell.cellOcupied = true;
+                                    if (structureSpawned.transform.rotation.x > 10) Debug.Log("Is Horizontal!");
+                                    else if (structureSpawned.transform.rotation.x > 10) Debug.Log("Is Vertical!");
+                                }
+                                if (structure.structureSize == 4)
+                                {
+                                    cell.cellOcupied = true;
+                                    grid[x + 1, y].cellOcupied = true;//Right Cell
+                                    grid[x, y + 1].cellOcupied = true;//Down Cell
+                                    grid[x + 1, y + 1].cellOcupied = true;//Right Bottom                                
+                                }
+                            }
+
+                            cell.cellOcupied = true;
+
+                            //Set ocupied space based on the object size
+
+
+
+                        }
+                    }
+                }
+            }        
+        }
+        #endregion
+
+        #region - Map Gizmos Draw Generation -
+        //private void OnDrawGizmos()
+        //{
+        //    if (!Application.isPlaying) return;
+        //    for (int y = 0; y < currentMap.size; y++)
+        //    {
+        //        for (int x = 0; x < currentMap.size; x++)
+        //        {
+        //            Cell cell = grid[x, y];
+        //            Color newColor = cell.cellType.blockColor;
+        //            Gizmos.color = newColor;
+
+        //            Vector3 pos = new Vector3(x, 0, y);
+        //            Gizmos.DrawCube(pos, Vector3.one);
+        //        }
+        //    }
+        //}
+        #endregion
     }
 }

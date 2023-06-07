@@ -14,6 +14,7 @@ namespace NekraliusDevelopmentStudio
         //This code represents (Code functionality or code meaning)
         public TerrainType cellType;
         public float heightValue;
+        public bool cellOcupied = false;
 
         public Cell(float heightValue)
         {

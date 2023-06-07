@@ -46,5 +46,18 @@ namespace NekraliusDevelopmentStudio
         [Header("Map General Settings")]
         public int size;
         public float noiseScale;
+
+        [Header("Object Placement Settings")]
+        public List<ProceduralStructures> mapStructures;
+    }
+
+    [Serializable]
+    public class ProceduralStructures
+    {
+        public string structureName = "structure_";
+        public GameObject structurePrefab;
+        public float noiseScale = 0.05f;
+        public float density = 0.5f;
+        public int structureSize = 1;
     }
 }
