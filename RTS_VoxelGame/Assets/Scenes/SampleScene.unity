@@ -156,6 +156,7 @@ MonoBehaviour:
     size: 100
     noiseScale: 0.1
   terrainMaterial: {fileID: 2100000, guid: ef014c960faa4934ba807d8aa3ed9b11, type: 2}
+  edgeMaterial: {fileID: 2100000, guid: 30f11274bcc2bc24b938d29d62af2f82, type: 2}
 --- !u!4 &143929494
 Transform:
   m_ObjectHideFlags: 0

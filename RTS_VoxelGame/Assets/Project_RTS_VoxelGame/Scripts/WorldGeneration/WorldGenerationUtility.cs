@@ -36,6 +36,8 @@ namespace NekraliusDevelopmentStudio
         public float heightValue = 1f;
         public Color blockColor = new Color(255, 255, 255, 255);
         public Material blockMaterial;
+
+        public bool CheckIfWater() => typeName == "Water";
     }
 
     [Serializable]
