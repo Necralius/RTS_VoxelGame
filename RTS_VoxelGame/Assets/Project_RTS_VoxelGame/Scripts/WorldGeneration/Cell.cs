@@ -16,10 +16,13 @@ namespace NekraliusDevelopmentStudio
         public float heightValue;
         public bool cellOcupied = false;
 
-        public Cell(float heightValue)
+        public Vector2Int cellCoord;
+
+        public Cell(float heightValue, int xCoord, int yCoord)
         {
             this.heightValue = heightValue;
             cellType = WorldGenerationUtility.Instance.GetType(heightValue);
+            cellCoord = new Vector2Int(xCoord, yCoord);
         }
 
         public bool CheckType(TerrainType typeToCheck) => cellType.Equals(typeToCheck);

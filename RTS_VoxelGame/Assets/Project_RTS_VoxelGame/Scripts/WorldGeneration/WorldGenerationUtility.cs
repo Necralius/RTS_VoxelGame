@@ -58,6 +58,5 @@ namespace NekraliusDevelopmentStudio
         public GameObject structurePrefab;
         public float noiseScale = 0.05f;
         public float density = 0.5f;
-        public int structureSize = 1;
     }
 }
