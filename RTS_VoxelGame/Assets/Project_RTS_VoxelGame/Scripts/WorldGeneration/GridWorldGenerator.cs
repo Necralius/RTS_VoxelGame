@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static NekraliusDevelopmentStudio.NDS_Utility;
 
 namespace NekraliusDevelopmentStudio
 {
@@ -12,9 +13,14 @@ namespace NekraliusDevelopmentStudio
         //Code State - (Needs Refactoring, Needs Coments, Needs Improvement)
         //This code represents (Code functionality or code meaning)
 
+        #region - Singleton Pattern -
+        public static GridWorldGenerator Instance;
+        private void Awake() => Instance = this;
+        #endregion
+
         [Header("Grid Settings")]
         public MapData currentMap = new MapData();
-        Cell[,] grid;
+        [HideInInspector] public Cell[,] grid;
      
         [Header("Grid Dependencies")]
         public Material terrainMaterial;
@@ -25,9 +31,11 @@ namespace NekraliusDevelopmentStudio
 
         private Mesh mesh;
         private MeshFilter meshFilter;
+        private MeshCollider meshCollider;
         private MeshRenderer meshRenderer;
-        private Transform childParent => transform;
         private GameObject edgeObject;
+
+        public bool DrawGizmos = false;
 
         private void Start()
         {
@@ -58,6 +66,7 @@ namespace NekraliusDevelopmentStudio
             DrawEdgeMesh(grid, currentMap);
             DrawTexture(grid, currentMap);
             GenerateAllStructures(currentMap);
+            BuildingSystem.Instance.GenerateGridDraw();
         }
 
         #region - Noise Map Generation -
@@ -110,6 +119,7 @@ namespace NekraliusDevelopmentStudio
             List<Vector3> vertices = new List<Vector3>();
             List<int> triangles = new List<int>();
             List<Vector2> uvs = new List<Vector2>();
+
             for (int y = 0; y < size; y++)
             {
                 for (int x = 0; x < size; x++)
@@ -117,10 +127,10 @@ namespace NekraliusDevelopmentStudio
                     Cell cell = grid[x, y];
                     if (!cell.cellType.CheckIfWater())
                     {
-                        Vector3 a = new Vector3(x - .5f, 0, y + .5f);
-                        Vector3 b = new Vector3(x + .5f, 0, y + .5f);
-                        Vector3 c = new Vector3(x - .5f, 0, y - .5f);
-                        Vector3 d = new Vector3(x + .5f, 0, y - .5f);
+                        Vector3 a = new Vector3(x - data.gridCellSize, 0, y + data.gridCellSize);
+                        Vector3 b = new Vector3(x + data.gridCellSize, 0, y + data.gridCellSize);
+                        Vector3 c = new Vector3(x - data.gridCellSize, 0, y - data.gridCellSize);
+                        Vector3 d = new Vector3(x + data.gridCellSize, 0, y - data.gridCellSize);
                         Vector2 uvA = new Vector2(x / (float)size, y / (float)size);
                         Vector2 uvB = new Vector2((x + 1) / (float)size, y / (float)size);
                         Vector2 uvC = new Vector2(x / (float)size, (y + 1) / (float)size);
@@ -136,7 +146,7 @@ namespace NekraliusDevelopmentStudio
                     }
                 }
             }
-            
+
             mesh.vertices = vertices.ToArray();
             mesh.triangles = triangles.ToArray();
             mesh.uv = uvs.ToArray();
@@ -145,6 +155,8 @@ namespace NekraliusDevelopmentStudio
             if (meshFilter == null) { meshFilter = gameObject.AddComponent<MeshFilter>(); }
             meshFilter.mesh = mesh;
             if (meshRenderer == null) { meshRenderer = gameObject.AddComponent<MeshRenderer>(); }
+            if (meshCollider == null) { meshCollider = gameObject.AddComponent<MeshCollider>(); }
+            meshCollider.sharedMesh = mesh;
         }
         #endregion
 
@@ -169,10 +181,10 @@ namespace NekraliusDevelopmentStudio
                             Cell left = grid[x - 1, y];
                             if (left.cellType.CheckIfWater())
                             {
-                                Vector3 a = new Vector3(x - .5f, 0, y + .5f);
-                                Vector3 b = new Vector3(x - .5f, 0, y - .5f);
-                                Vector3 c = new Vector3(x - .5f, -1, y + .5f);
-                                Vector3 d = new Vector3(x - .5f, -1, y - .5f);
+                                Vector3 a = new Vector3(x - data.gridCellSize, 0, y + data.gridCellSize);
+                                Vector3 b = new Vector3(x - data.gridCellSize, 0, y - data.gridCellSize);
+                                Vector3 c = new Vector3(x - data.gridCellSize, -1, y + data.gridCellSize);
+                                Vector3 d = new Vector3(x - data.gridCellSize, -1, y - data.gridCellSize);
                                 Vector3[] v = new Vector3[] { a, b, c, b, d, c };
                                 for (int k = 0; k < 6; k++)
                                 {
@@ -186,10 +198,10 @@ namespace NekraliusDevelopmentStudio
                             Cell right = grid[x + 1, y];
                             if (right.cellType.CheckIfWater())
                             {
-                                Vector3 a = new Vector3(x + .5f, 0, y - .5f);
-                                Vector3 b = new Vector3(x + .5f, 0, y + .5f);
-                                Vector3 c = new Vector3(x + .5f, -1, y - .5f);
-                                Vector3 d = new Vector3(x + .5f, -1, y + .5f);
+                                Vector3 a = new Vector3(x + data.gridCellSize, 0, y - data.gridCellSize);
+                                Vector3 b = new Vector3(x + data.gridCellSize, 0, y + data.gridCellSize);
+                                Vector3 c = new Vector3(x + data.gridCellSize, -1, y - data.gridCellSize);
+                                Vector3 d = new Vector3(x + data.gridCellSize, -1, y + data.gridCellSize);
                                 Vector3[] v = new Vector3[] { a, b, c, b, d, c };
                                 for (int k = 0; k < 6; k++)
                                 {
@@ -203,10 +215,10 @@ namespace NekraliusDevelopmentStudio
                             Cell down = grid[x, y - 1];
                             if (down.cellType.CheckIfWater())
                             {
-                                Vector3 a = new Vector3(x - .5f, 0, y - .5f);
-                                Vector3 b = new Vector3(x + .5f, 0, y - .5f);
-                                Vector3 c = new Vector3(x - .5f, -1, y - .5f);
-                                Vector3 d = new Vector3(x + .5f, -1, y - .5f);
+                                Vector3 a = new Vector3(x - data.gridCellSize, 0, y - data.gridCellSize);
+                                Vector3 b = new Vector3(x + data.gridCellSize, 0, y - data.gridCellSize);
+                                Vector3 c = new Vector3(x - data.gridCellSize, -1, y - data.gridCellSize);
+                                Vector3 d = new Vector3(x + data.gridCellSize, -1, y - data.gridCellSize);
                                 Vector3[] v = new Vector3[] { a, b, c, b, d, c };
                                 for (int k = 0; k < 6; k++)
                                 {
@@ -220,10 +232,10 @@ namespace NekraliusDevelopmentStudio
                             Cell up = grid[x, y + 1];
                             if (up.cellType.CheckIfWater())
                             {
-                                Vector3 a = new Vector3(x + .5f, 0, y + .5f);
-                                Vector3 b = new Vector3(x - .5f, 0, y + .5f);
-                                Vector3 c = new Vector3(x + .5f, -1, y + .5f);
-                                Vector3 d = new Vector3(x - .5f, -1, y + .5f);
+                                Vector3 a = new Vector3(x + data.gridCellSize, 0, y + data.gridCellSize);
+                                Vector3 b = new Vector3(x - data.gridCellSize, 0, y + data.gridCellSize);
+                                Vector3 c = new Vector3(x + data.gridCellSize, -1, y + data.gridCellSize);
+                                Vector3 d = new Vector3(x - data.gridCellSize, -1, y + data.gridCellSize);
                                 Vector3[] v = new Vector3[] { a, b, c, b, d, c };
                                 for (int k = 0; k < 6; k++)
                                 {
@@ -244,11 +256,26 @@ namespace NekraliusDevelopmentStudio
             edgeObject.transform.SetParent(transform);
             edgeObject.transform.position = Vector3.zero;
 
-            MeshFilter meshFilter = edgeObject.AddComponent<MeshFilter>();
-            meshFilter.mesh = mesh;
+            if (!edgeObject.GetComponent<MeshFilter>())
+            {
+                MeshFilter meshFilter = edgeObject.AddComponent<MeshFilter>();
+                meshFilter.mesh = mesh;
+            }
+            else edgeObject.GetComponent<MeshFilter>().mesh = mesh;
 
-            MeshRenderer meshRenderer = edgeObject.AddComponent<MeshRenderer>();
-            meshRenderer.material = edgeMaterial;
+            if (!edgeObject.GetComponent<MeshRenderer>())
+            {
+                MeshRenderer meshRenderer = edgeObject.AddComponent<MeshRenderer>();
+                meshRenderer.material = edgeMaterial;
+            }
+            else edgeObject.GetComponent<MeshRenderer>().material = edgeMaterial;
+
+            if (!edgeObject.GetComponent<MeshCollider>()) 
+            {
+                meshCollider = edgeObject.AddComponent<MeshCollider>();
+                meshCollider.sharedMesh = mesh;
+            }
+            else edgeObject.GetComponent<MeshCollider>().sharedMesh = mesh;
         }
         #endregion
 
@@ -317,7 +344,7 @@ namespace NekraliusDevelopmentStudio
                             cell.cellOcupied = true;
 
                             GameObject structureSpawned = Instantiate(structure.structurePrefab, transform);
-                            structureSpawned.transform.position = new Vector3(x, 0, y);
+                            structureSpawned.transform.position = new Vector3(x, 0, y) + new Vector3(data.gridCellSize, 0, data.gridCellSize) * 0.5f;
                             structureSpawned.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360f), 0);
                             structureSpawned.transform.localScale = Vector3.one * Random.Range(0.8f, 1.2f);
                         }
@@ -349,15 +376,36 @@ namespace NekraliusDevelopmentStudio
             {
                 for (int x = 0; x < currentMap.size; x++)
                 {
-                    Cell cell = grid[x, y];
-                    if (cell.cellOcupied) Gizmos.color = Color.red;
-                    else Gizmos.color = cell.cellType.blockColor;
+                    if (DrawGizmos)
+                    {
+                        Cell cell = grid[x, y];
+                        if (cell.cellOcupied) Gizmos.color = Color.red;
+                        else Gizmos.color = cell.cellType.blockColor;
 
-                    Vector3 pos = new Vector3(x, 0, y);
-                    Gizmos.DrawCube(pos, Vector3.one);
+                        Vector3 pos = new Vector3(x, 0, y) + new Vector3(currentMap.gridCellSize, 0, currentMap.gridCellSize) * 0.5f;
+                        Gizmos.DrawCube(pos, Vector3.one);
+                    }
+
+                    if (currentMap.DrawnGrid)
+                    {
+                        currentMap.mapCompleteData = grid;
+                        if (!(currentMap.mapCompleteData[x, y].cellType.CheckIfWater() || currentMap.mapCompleteData[x,y].cellOcupied))
+                        {
+                            Gizmos.color = Color.white;
+                            Gizmos.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1));
+                            Gizmos.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y));
+
+                            Gizmos.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x - 1, y));
+                            Gizmos.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y - 1));
+
+                            Gizmos.DrawLine(GetWorldPosition(x, y + 1), GetWorldPosition(x + 1, y + 1));
+                            Gizmos.DrawLine(GetWorldPosition(x + 1, y), GetWorldPosition(x + 1, y + 1));     
+                        }
+                    }
                 }
             }
         }
+        private Vector3 GetWorldPosition(int x, int y) => new Vector3(x, 0, y) * currentMap.gridCellSize;
         #endregion
     }
 }

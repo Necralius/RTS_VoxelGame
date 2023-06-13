@@ -53,6 +53,24 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""CancelPlacement"",
+                    ""type"": ""Button"",
+                    ""id"": ""18f38c5b-29c4-475a-ae6a-ee86937dc88a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RightClick"",
+                    ""type"": ""Button"",
+                    ""id"": ""4ce8e7cd-d5f2-47a0-bb03-44d4731d2a94"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -198,6 +216,28 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
                     ""action"": ""ZoomScroll"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3d1c2124-6cd1-48a9-b28b-0fc8ae663be7"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CancelPlacement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4840890f-91c9-4d01-bf8b-2cf4dc0cac39"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RightClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -209,6 +249,8 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
         m_KeyboardMap_Look = m_KeyboardMap.FindAction("Look", throwIfNotFound: true);
         m_KeyboardMap_Move = m_KeyboardMap.FindAction("Move", throwIfNotFound: true);
         m_KeyboardMap_ZoomScroll = m_KeyboardMap.FindAction("ZoomScroll", throwIfNotFound: true);
+        m_KeyboardMap_CancelPlacement = m_KeyboardMap.FindAction("CancelPlacement", throwIfNotFound: true);
+        m_KeyboardMap_RightClick = m_KeyboardMap.FindAction("RightClick", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -271,6 +313,8 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
     private readonly InputAction m_KeyboardMap_Look;
     private readonly InputAction m_KeyboardMap_Move;
     private readonly InputAction m_KeyboardMap_ZoomScroll;
+    private readonly InputAction m_KeyboardMap_CancelPlacement;
+    private readonly InputAction m_KeyboardMap_RightClick;
     public struct KeyboardMapActions
     {
         private @InputMaps m_Wrapper;
@@ -278,6 +322,8 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_KeyboardMap_Look;
         public InputAction @Move => m_Wrapper.m_KeyboardMap_Move;
         public InputAction @ZoomScroll => m_Wrapper.m_KeyboardMap_ZoomScroll;
+        public InputAction @CancelPlacement => m_Wrapper.m_KeyboardMap_CancelPlacement;
+        public InputAction @RightClick => m_Wrapper.m_KeyboardMap_RightClick;
         public InputActionMap Get() { return m_Wrapper.m_KeyboardMap; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -296,6 +342,12 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
                 @ZoomScroll.started -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnZoomScroll;
                 @ZoomScroll.performed -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnZoomScroll;
                 @ZoomScroll.canceled -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnZoomScroll;
+                @CancelPlacement.started -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnCancelPlacement;
+                @CancelPlacement.performed -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnCancelPlacement;
+                @CancelPlacement.canceled -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnCancelPlacement;
+                @RightClick.started -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnRightClick;
+                @RightClick.performed -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnRightClick;
+                @RightClick.canceled -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnRightClick;
             }
             m_Wrapper.m_KeyboardMapActionsCallbackInterface = instance;
             if (instance != null)
@@ -309,6 +361,12 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
                 @ZoomScroll.started += instance.OnZoomScroll;
                 @ZoomScroll.performed += instance.OnZoomScroll;
                 @ZoomScroll.canceled += instance.OnZoomScroll;
+                @CancelPlacement.started += instance.OnCancelPlacement;
+                @CancelPlacement.performed += instance.OnCancelPlacement;
+                @CancelPlacement.canceled += instance.OnCancelPlacement;
+                @RightClick.started += instance.OnRightClick;
+                @RightClick.performed += instance.OnRightClick;
+                @RightClick.canceled += instance.OnRightClick;
             }
         }
     }
@@ -318,5 +376,7 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnZoomScroll(InputAction.CallbackContext context);
+        void OnCancelPlacement(InputAction.CallbackContext context);
+        void OnRightClick(InputAction.CallbackContext context);
     }
 }

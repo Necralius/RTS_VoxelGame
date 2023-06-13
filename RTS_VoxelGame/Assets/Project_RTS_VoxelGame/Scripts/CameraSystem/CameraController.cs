@@ -48,6 +48,8 @@ namespace NekraliusDevelopmentStudio
 
         private Vector3 startPos;
 
+        public bool DrawGizmos = false;
+
         private void Awake()
         {
             targetPosition = transform.position;
@@ -55,6 +57,8 @@ namespace NekraliusDevelopmentStudio
             currentAngle = targetAngle;
             targetZoomPosition = cameraHolder.localPosition;
             startPos = transform.position;
+
+            Cursor.lockState = CursorLockMode.Locked;
         }
         private void Update()
         {
@@ -66,7 +70,12 @@ namespace NekraliusDevelopmentStudio
 
         private void InputHandle()
         {
-            if (Input.GetMouseButton(1)) targetAngle += inputAsset.Look.x * cameraRotationSpeed;
+            if (inputAsset.rightClick)
+            {
+                targetAngle += inputAsset.Look.x * cameraRotationSpeed;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+            else Cursor.lockState = CursorLockMode.None;
 
             zoomInputValue = Input.GetAxisRaw("Mouse ScrollWheel");
 
@@ -107,9 +116,12 @@ namespace NekraliusDevelopmentStudio
         #region - Camera Range Debug -
         private void OnDrawGizmos()
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(transform.position, 5f);
-            Gizmos.DrawWireCube(startPos, new Vector3(cameraRange.x * 2f, 5f, cameraRange.y * 2f));
+            if (DrawGizmos)
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawSphere(transform.position, 5f);
+                Gizmos.DrawWireCube(startPos, new Vector3(cameraRange.x * 2f, 5f, cameraRange.y * 2f));
+            }
         }
         #endregion
     }
