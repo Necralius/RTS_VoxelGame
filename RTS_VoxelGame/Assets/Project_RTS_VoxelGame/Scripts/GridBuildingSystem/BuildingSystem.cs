@@ -43,14 +43,14 @@ namespace NekraliusDevelopmentStudio
         private void Start()
         {
             StopPlacement();
+            //ChangeGridDrawState(false);
 
-            GridWorldGenerator.Instance.currentMap.floorData = new ObjectGridData();
-            GridWorldGenerator.Instance.currentMap.furnitureData = new ObjectGridData();
+            floorData = GridWorldGenerator.Instance.currentMap.floorData = new ObjectGridData();
+            furturineData = GridWorldGenerator.Instance.currentMap.furnitureData = new ObjectGridData();
         }
 
         private void Update()
         {
-            //if (selectedObjectIndex < 0) return;
             if (isInPlacementMode)
             {
                 Vector3 mousePos = inputManager.GetSelectedMapPosition();
@@ -70,8 +70,16 @@ namespace NekraliusDevelopmentStudio
             StopPlacement();
             ChangeGridDrawState(true);
 
-            buildingState = new PlacementState(ID, buildingGrid, previewSystem, objectDatabase, floorData, furturineData, objectPlacer);
+            buildingState = new PlacementState(ID, buildingGrid, previewSystem, objectDatabase, objectPlacer, furturineData, floorData);
 
+            inputManager.OnClicked += PlaceStructure;
+            inputManager.OnExit += StopPlacement;
+        }
+        public void StartRemoving()
+        {
+            StopPlacement();
+            ChangeGridDrawState(true);
+            buildingState = new RemovingState(buildingGrid, previewSystem, objectPlacer, furturineData, floorData);
 
             inputManager.OnClicked += PlaceStructure;
             inputManager.OnExit += StopPlacement;

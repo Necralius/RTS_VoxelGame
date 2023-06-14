@@ -36,6 +36,8 @@ namespace NekraliusDevelopmentStudio
             SetCursor(Size);
             cellIndicator.SetActive(true);
         }
+
+
         private void SetPreview(GameObject previewObject)
         {
             Renderer[] renderers = previewObject.GetComponentsInChildren<Renderer>();
@@ -58,7 +60,7 @@ namespace NekraliusDevelopmentStudio
         public void DisablePlacementPreview()
         {
             cellIndicator.SetActive(false);
-            Destroy(previewObject);
+            if (previewObject != null) Destroy(previewObject);
         }
 
         public void UpdatePosition(Vector3 position, bool validity)
@@ -91,6 +93,12 @@ namespace NekraliusDevelopmentStudio
 
             c.a = 0.5f;
             cellIndicatorRenderer.material.color = c;
+        }
+        internal void ShowPlacementRemovePreview()
+        {
+            cellIndicator.SetActive(true);
+            SetCursor(Vector2Int.one);
+            ApplyFeedbackToCursor(false);
         }
     }
 }
