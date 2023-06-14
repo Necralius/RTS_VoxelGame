@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static NekraliusDevelopmentStudio.BuildingSystemUtility;
 
 namespace NekraliusDevelopmentStudio
 {
@@ -17,7 +18,6 @@ namespace NekraliusDevelopmentStudio
         #endregion
 
         [SerializeField] private GameObject mouseIndicator;
-        [SerializeField] private GameObject cellIndicator;
         [SerializeField] private InputManager inputManager => InputManager.Instance;
         [SerializeField] private Grid buildingGrid;
 
@@ -27,11 +27,18 @@ namespace NekraliusDevelopmentStudio
         [SerializeField] private GameObject gridCellPrefab;
         [SerializeField] private Transform gridCellContent;
 
-        private Renderer previewRenderer;
+        public bool isInPlacementMode = false;
 
-        private List<GameObject> placedGameObjects = new List<GameObject>();
+        ObjectGridData floorData;
+        ObjectGridData furturineData;
 
-        [SerializeField] private bool isInPlacementMode = false;
+        [SerializeField] private BuildingPreviewSystem previewSystem;
+        private Vector3Int lastDetectedPosition = Vector3Int.zero;
+
+        [SerializeField] private ObjectPlacer objectPlacer;
+
+        IBuildingState buildingState;
+
 
         private void Start()
         {
@@ -39,73 +46,72 @@ namespace NekraliusDevelopmentStudio
 
             GridWorldGenerator.Instance.currentMap.floorData = new ObjectGridData();
             GridWorldGenerator.Instance.currentMap.furnitureData = new ObjectGridData();
-            previewRenderer = cellIndicator.GetComponentInChildren<Renderer>();
         }
 
         private void Update()
         {
             //if (selectedObjectIndex < 0) return;
-            Vector3 mousePos = inputManager.GetSelectedMapPosition();
-            Vector3Int gridPosition = buildingGrid.WorldToCell(mousePos);
+            if (isInPlacementMode)
+            {
+                Vector3 mousePos = inputManager.GetSelectedMapPosition();
+                Vector3Int gridPosition = buildingGrid.WorldToCell(mousePos);
 
-            bool placementValidity = true;
-            if (isInPlacementMode && selectedObjectIndex >= 0) placementValidity = CheckPlacementValidity(gridPosition, selectedObjectIndex);
-
-            previewRenderer.material.color = placementValidity ? Color.yellow : Color.red;
-
-            mouseIndicator.transform.position = mousePos;
-            cellIndicator.transform.position = buildingGrid.CellToWorld(gridPosition);
+                if (lastDetectedPosition != gridPosition)
+                {
+                    mouseIndicator.transform.position = mousePos;
+                    buildingState.UpdateState(gridPosition);
+                    lastDetectedPosition = gridPosition;
+                }
+            }
         }
+        #region - Placement Interaction -
         public void StartPlacement(int ID)
         {
             StopPlacement();
-
-            selectedObjectIndex = objectDatabase.objectsData.FindIndex(data => data.ID == ID);
-            if (selectedObjectIndex < 0)
-            {
-                Debug.LogError($"No ID Found {ID}");
-                return;
-            }
             ChangeGridDrawState(true);
+
+            buildingState = new PlacementState(ID, buildingGrid, previewSystem, objectDatabase, floorData, furturineData, objectPlacer);
+
+
             inputManager.OnClicked += PlaceStructure;
             inputManager.OnExit += StopPlacement;
         }
+        private void StopPlacement()//This method stop the structure placement mode.
+        {
+            /* The method resets the selectedObjectIndex to an non object number, later the method deactivate the grid draw state, and finally the method unassign the method input actions.
+             * 
+             */
+            if (buildingState == null) return;
+
+            ChangeGridDrawState(false);
+            buildingState.EndState();
+
+            inputManager.OnClicked -= PlaceStructure;
+            inputManager.OnExit -= StopPlacement;
+            lastDetectedPosition = Vector3Int.zero;
+
+            buildingState = null;
+        }
+        #endregion
+
+        #region - Structure Spawning -
         private void PlaceStructure()
         {
             if (inputManager.IsPointerOverUI()) return;
             Vector3 mousePosition = inputManager.GetSelectedMapPosition();
             Vector3Int gridPosition = buildingGrid.WorldToCell(mousePosition);
 
-            bool placementValidity = CheckPlacementValidity(gridPosition, selectedObjectIndex);
-
-            if (!placementValidity) return;
-
-            GameObject newObject = Instantiate(objectDatabase.objectsData[selectedObjectIndex].prefab);
-            newObject.transform.position = buildingGrid.CellToWorld(gridPosition);
-            placedGameObjects.Add(newObject);
-
-            ObjectGridData selectedData = objectDatabase.objectsData[selectedObjectIndex].ID == 0 ? GridWorldGenerator.Instance.currentMap.floorData : GridWorldGenerator.Instance.currentMap.furnitureData;
-
-            selectedData.AddObjectAt(gridPosition, objectDatabase.objectsData[selectedObjectIndex].Size, objectDatabase.objectsData[selectedObjectIndex].ID, placedGameObjects.Count - 1);
+            buildingState.OnAction(gridPosition);
         }
-        private void StopPlacement()
-        {
-            selectedObjectIndex = -1;
+        #endregion
 
-            ChangeGridDrawState(false);
-            inputManager.OnClicked -= PlaceStructure;
-            inputManager.OnExit -= StopPlacement;
-        }
-        private bool CheckPlacementValidity(Vector3Int gridPosition, int selectedObjectIndex)
-        {
-            ObjectGridData selectedData = objectDatabase.objectsData[selectedObjectIndex].ID == 0 ? GridWorldGenerator.Instance.currentMap.floorData : GridWorldGenerator.Instance.currentMap.furnitureData;
-
-            return selectedData.CanPlaceObjectAt(gridPosition, objectDatabase.objectsData[selectedObjectIndex].Size);
-        }
+        #region - Grid Drawning Management -
         public void GenerateGridDraw()
         {
+            //The below statement reset the complete grid draw, destroying all grid childs.
             if (gridCellContent.childCount > 0) foreach (Transform objTrans in gridCellContent) Destroy(objTrans.gameObject);        
 
+            //The below statements walks all the grid cells and draw the grid cell if the cell is not ocupied and is not an water cell.
             Cell[,] gridData = GridWorldGenerator.Instance.grid;
             int size = GridWorldGenerator.Instance.currentMap.size;
 
@@ -121,6 +127,11 @@ namespace NekraliusDevelopmentStudio
                 }
             }
         }
-        public void ChangeGridDrawState(bool state) { gridCellContent.gameObject.SetActive(state); isInPlacementMode = state; }
+        public void ChangeGridDrawState(bool state) 
+        {
+            gridCellContent.gameObject.SetActive(state); 
+            isInPlacementMode = state;
+        } //This method changes the active state of the grid drawning.
+        #endregion
     }
 }

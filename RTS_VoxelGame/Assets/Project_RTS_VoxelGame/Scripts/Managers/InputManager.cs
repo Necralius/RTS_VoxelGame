@@ -20,28 +20,39 @@ namespace NekraliusDevelopmentStudio
         void Awake() => Instance = this;
         #endregion
 
+        #region - Structure Placement System
+        [Header("Structure Placement System")]
         public Camera mainSceneCamera;
         public LayerMask gridMask;
         private Vector3 lastPosition;
 
+        #region - Structure Placement Actions -
         public event Action OnClicked;
         public event Action OnExit;
+        #endregion
 
+        #endregion
+
+        #region - Dependencies -
         private PlayerInput playerInput => GetComponent<PlayerInput>();
+        private InputActionMap currentMap;
+        #endregion
 
+        #region - Input Values -
         public Vector2 Move { get; private set; }
         public Vector2 Look { get; private set; }
         public float scrollValue { get; private set; }
         public bool rightClick { get; private set; }
         public bool cancelPlacement { get; private set; }
+        #endregion
 
-        private InputActionMap currentMap;
-
+        #region - Input Actions -
         private InputAction moveAction;
         private InputAction lookAction;
         private InputAction scrollAction;
         private InputAction rightClickAction;
         private InputAction cancelPlacementAction;
+        #endregion
 
         void Start()
         {
