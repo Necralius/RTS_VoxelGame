@@ -32,3 +32,8 @@ MonoBehaviour:
     Size: {x: 1, y: 1}
     prefab: {fileID: 4428052050468720457, guid: e033e50487fb016449143cd70d837387,
       type: 3}
+  - Name: Tree
+    ID: 99
+    Size: {x: 1, y: 1}
+    prefab: {fileID: 8446312320213215889, guid: d135df486c5a00d4fb03a6aa87be32e8,
+      type: 3}

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace NekraliusDevelopmentStudio
 {
-    [CreateAssetMenu(fileName = "New Object Database", menuName = "RST_Voxel/Placeable Objects/Object Database")]
+    [CreateAssetMenu(fileName = "New Object Database", menuName = "RTS_Voxel/Placeable Objects/Object Database")]
     public class ObjectsDatabaseSO : ScriptableObject
     {
         //Code made by Victor Paulo Melo da Silva - Game Developer - GitHub - https://github.com/Necralius

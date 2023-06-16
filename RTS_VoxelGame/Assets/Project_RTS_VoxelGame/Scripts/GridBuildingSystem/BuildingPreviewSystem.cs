@@ -7,39 +7,52 @@ namespace NekraliusDevelopmentStudio
     public class BuildingPreviewSystem : MonoBehaviour
     {
         //Code made by Victor Paulo Melo da Silva - Game Developer - GitHub - https://github.com/Necralius
-        //CompleteCodeName - (Code Version)
-        //Code State - (Needs Refactoring, Needs Coments, Needs Improvement)
-        //This code represents (Code functionality or code meaning)
+        //BuildingPreviewSystem - (0.3)
+        //State: Functional
+        //This code represents an build preview system, that shows an structure ghost preview on an building placement process.
 
-        [SerializeField] private float previewYOffset = 0.06f;
+        #region - Preview Data -
+        private float previewYOffset = 0.06f;
 
-        [SerializeField]
-        private GameObject cellIndicator;
+        [Header("Preview Data")]
+        [SerializeField] private GameObject cellIndicator;
+        [SerializeField] private Material previewMaterialPrefab;
+
         private GameObject previewObject;
-
-        [SerializeField]
-        private Material previewMaterialPrefab;
         private Material previewMaterialInstance;
 
         private Renderer cellIndicatorRenderer;
+        #endregion
 
+        //================================Methods================================//
+
+        #region - BuildIn Methods -
         private void Start()
         {
+            //This method execute some action to get all needed data to the preview system functionality, like, instatiates an new material prefab, an deactivates the cellIndicator for certify that he gonna be active only in the preview interaction.
             cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>(); 
             previewMaterialInstance = new Material(previewMaterialPrefab);
             cellIndicator.SetActive(false);
         }
+        #endregion
+
+        #region - Placement Preview Show Interaction Start -
         public void ShowPlacementPreview(GameObject Prefab, Vector2Int Size)
         {
+            //This method instatiate the preview object and calls the cursor object set, also the method activate the cell indicator.
+
             previewObject = Instantiate(Prefab);
             SetPreview(previewObject);
             SetCursor(Size);
             cellIndicator.SetActive(true);
         }
+        #endregion
 
-
+        #region - Placement Preview System -
         private void SetPreview(GameObject previewObject)
         {
+            //This method gets the preview object and travels for every material that this object have on his Renderer, changing this material to an new material instance copy.
+
             Renderer[] renderers = previewObject.GetComponentsInChildren<Renderer>();
 
             foreach (Renderer renderer in renderers)
@@ -51,54 +64,77 @@ namespace NekraliusDevelopmentStudio
         }
         private void SetCursor(Vector2Int Size)
         {
+            //This method sets the object preview cursor size to the object size. Also the method verifies if the size is greater than zero, so the system can proceed, if is not, the system will do nothing.
+
             if (Size.x > 0 || Size.y > 0)
             {
                 cellIndicator.transform.localScale = new Vector3(Size.x, 1, Size.y);
                 cellIndicatorRenderer.material.mainTextureScale = Size;
             }
         }
+        #endregion
+
+        #region - Preview System Deactivating -
         public void DisablePlacementPreview()
         {
+            //This method simply deactivate the cellIndicator and destroy the object preview, so deactivating the entire Placement Preview System.
             cellIndicator.SetActive(false);
             if (previewObject != null) Destroy(previewObject);
         }
+        #endregion
 
+        #region - Preview System Remove Interaction -
+        internal void ShowPlacementRemovePreview()
+        {
+            //This method starts the preview system, but this method is exclusive to the remove building state.
+            cellIndicator.SetActive(true);
+            SetCursor(Vector2Int.one);
+            CursorFeedbackColorSet(false);
+        }
+        #endregion
+
+        #region - Cursor and Mouse Update -
         public void UpdatePosition(Vector3 position, bool validity)
-        {          
+        {
+            /*This method updates the preview object and cursor position, also updating they feedback color considering they actual validity.
+             * Also the method prevent the preview object executing if the system doesn't have an valid preview object reference, so preventing any further bugs.
+             */
+
             if (previewObject != null)
             {
                 MovePreview(position);
-                ApplyFeedbackToPreview(validity);
+                PreviewFeedbackColorSet(validity);
             }
             MoveCursor(position);
-            ApplyFeedbackToCursor(validity);
+            CursorFeedbackColorSet(validity);
         }
-        private void MovePreview(Vector3 position)
+
+        //The below methods sets the preview object position and the cursor position to the position passed as an argument. 
+        private void MovePreview(Vector3 position) => previewObject.transform.position = new Vector3(position.x, position.y + previewYOffset, position.z);
+        private void MoveCursor(Vector3 position) => cellIndicator.transform.position = position;
+        #endregion
+
+        #region - Placement Preview Color Feedback -
+        private void PreviewFeedbackColorSet(bool validity)
         {
-            previewObject.transform.position = new Vector3(position.x, position.y + previewYOffset, position.z);
-        }
-        private void MoveCursor(Vector3 position)
-        {
-            cellIndicator.transform.position = position;
-        }
-        private void ApplyFeedbackToPreview(bool validity)
-        {
+            /* This method change the preview object main color considering his validity, also the color is passed with an low alpha value, making it an "Ghost" 
+             * object copy.
+             */
+
             Color c = validity ? Color.white : Color.red;
             c.a = 0.5f;
             previewMaterialInstance.color = c;
         }
-        private void ApplyFeedbackToCursor(bool validity)
+        private void CursorFeedbackColorSet(bool validity)
         {
+            /* This method change the cursor object main color considering his validity, also the color is passed with an low alpha value.
+             */
+
             Color c = validity ? Color.white : Color.red;
 
             c.a = 0.5f;
             cellIndicatorRenderer.material.color = c;
         }
-        internal void ShowPlacementRemovePreview()
-        {
-            cellIndicator.SetActive(true);
-            SetCursor(Vector2Int.one);
-            ApplyFeedbackToCursor(false);
-        }
+        #endregion
     }
 }

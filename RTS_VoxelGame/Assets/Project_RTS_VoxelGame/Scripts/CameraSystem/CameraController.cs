@@ -7,49 +7,52 @@ namespace NekraliusDevelopmentStudio
     public class CameraController : MonoBehaviour
     {
         //Code made by Victor Paulo Melo da Silva - Game Developer - GitHub - https://github.com/Necralius
-        //CameraController - (0.1)
-        //Code State - (Needs Refactoring, Needs Coments, Needs Improvement)
-        //This code represents (Code functionality or code meaning)
+        //CameraController - (0.3)
+        //State: Fully Functional
+        //This code represents an camera controller of an Real Time Strategy game.
 
-        private InputManager inputAsset => InputManager.Instance;
-
-        [Header("Camera Sensitivity Settings")]
+        #region - Camera Settings Data -
+        [Header("Movment Data")]
         [SerializeField] private float cameraMovmentSpeed = 1f;
-        [SerializeField] private float cameraRotationSpeed = 15f;
-
-        [Header("Other Settings")]
         [SerializeField] private float cameraMovmentSmoothing = 5f;
-
-        #region - Camera Movment -
-        [Header("Camera Movment")]
         [SerializeField] private Vector2 cameraRange = new (100, 100);
 
+        [Header("Rotation Data")]
+        [SerializeField] private float cameraRotationSpeed = 15f;
+        [SerializeField] private float cameraRotationSmoothing;
+
+        [Header("Zooom Data")]
+        [SerializeField] private float zoomSpeed = 5f;
+        [SerializeField] private float zoomSmoothing = 5f;
+
+        [SerializeField] private Vector2 zoomRange = new (30f, 70f);
+        #endregion
+
+        #region - Dependencies and Data -
+        [Header("Dependencies")]
+        [SerializeField] private Transform cameraHolder;
+        private Vector3 cameraDirection => transform.InverseTransformDirection(cameraHolder.forward);
+        private Vector3 targetZoomPosition;
+
+        private float zoomInputValue;
+
         private Vector3 targetPosition;
-        private Vector3 input;
         #endregion
 
         #region - Camera Rotation -
         private float targetAngle;
         private float currentAngle;
-        #endregion
-
-        #region - Camera Zoom -
-        [Header("Camera Zoom Settings")]
-        [SerializeField] private float zoomSpeed = 5f;
-        [SerializeField] private float zoomSmoothing = 5f;
-        [SerializeField] private Vector2 zoomRange = new (30f, 70f);
-
-        [Header("Dependencies")]
-        [SerializeField] private Transform cameraHolder;
-        private Vector3 cameraDirection => transform.InverseTransformDirection(cameraHolder.forward);
-        private Vector3 targetZoomPosition;
-        private float zoomInputValue;
-        #endregion
-
         private Vector3 startPos;
 
-        public bool DrawGizmos = false;
+        private Vector3 input;
 
+        [SerializeField] private bool DrawGizmos = false;
+        private InputManager inputAsset => InputManager.Instance;
+        #endregion
+
+        //================================Methods================================//
+
+        #region - BuiltIn Methods -
         private void Awake()
         {
             targetPosition = transform.position;
@@ -67,55 +70,76 @@ namespace NekraliusDevelopmentStudio
             CameraRotation();
             CameraZoom();
         }
+        #endregion
 
+        #region - Camera Input Calculation - 
         private void InputHandle()
         {
+            #region - Rotation Input -
+            //The below statements detects if the player has the right mouse button pressed, if is true, the camera rotation input angle value is calculated and the mouse cursor is disable.
+
             if (inputAsset.rightClick)
             {
                 targetAngle += inputAsset.Look.x * cameraRotationSpeed;
                 Cursor.lockState = CursorLockMode.Locked;
             }
-            else Cursor.lockState = CursorLockMode.None;
+            else Cursor.lockState = CursorLockMode.None;// -> If the right mouse button is not pressed, the cursor is activated again.
+            #endregion
 
-            zoomInputValue = Input.GetAxisRaw("Mouse ScrollWheel");
-
-            float x = inputAsset.Move.x;
-            float z = inputAsset.Move.y;
-
-            Vector3 right = transform.right * x;
-            Vector3 forward = transform.forward * z;
+            
+            zoomInputValue = Input.GetAxisRaw("Mouse ScrollWheel");// -> The zoom input value is get from the InputManager.
+            
+            //The below statement get the complete input values from the input manager and makes an new 3D vector that holds all the normalized input vector value.
+            Vector3 right = transform.right * inputAsset.Move.x;
+            Vector3 forward = transform.forward * inputAsset.Move.y;
 
             input = (forward + right).normalized;
         }
+        #endregion
+
+        #region - Camera Move System -
         private void CameraMove()
         { 
+            //This method get the camera movment input and using an camera movment speed, moves the camera in the world, considering an area range as limiter.
             Vector3 nextTargetPosition = targetPosition + input * cameraMovmentSpeed;
             if (IsInMoveBounds(nextTargetPosition)) targetPosition = nextTargetPosition;
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * cameraMovmentSmoothing);
         }
-        private void CameraRotation()
-        {
-            currentAngle = Mathf.Lerp(currentAngle, targetAngle, Time.deltaTime * cameraMovmentSmoothing);
-            transform.rotation = Quaternion.AngleAxis(currentAngle, Vector3.up);
-        }
-        private void CameraZoom()
-        {
-            Vector3 nextTargetPosition = targetZoomPosition + cameraDirection * (zoomInputValue * zoomSpeed);
-            if (IsInZoomBounds(nextTargetPosition)) targetZoomPosition = nextTargetPosition;
-            cameraHolder.localPosition = Vector3.Lerp(cameraHolder.localPosition, targetZoomPosition, Time.deltaTime * zoomSmoothing);
-        }
-        private bool IsInZoomBounds(Vector3 position) => position.magnitude > zoomRange.x && position.magnitude < zoomRange.y;
         private bool IsInMoveBounds(Vector3 position)
         {
+            //This method return if the vector passed as an argument is an valid position in the movment bounds.
             return position.x > -cameraRange.x && 
                    position.x < cameraRange.x && 
                    position.z > -cameraRange.y && 
                    position.z < cameraRange.y;
         }
+        #endregion
+
+        #region - Camera Rotation System -
+        private void CameraRotation()
+        {
+            //This method get the rotation input and apply on the camera rotation using an Lerp Method to interpolates.
+            currentAngle = Mathf.Lerp(currentAngle, targetAngle, Time.deltaTime * cameraRotationSmoothing);
+            transform.rotation = Quaternion.AngleAxis(currentAngle, Vector3.up);
+        }
+        #endregion
+
+        #region - Camera Zoom System -
+        private void CameraZoom()
+        {
+            //This method get the camera zoom input and using an camera zoom speed, moves the camera in the world, considering the zoom range as an limiter.
+            Vector3 nextTargetPosition = targetZoomPosition + cameraDirection * (zoomInputValue * zoomSpeed);
+            if (IsInZoomBounds(nextTargetPosition)) targetZoomPosition = nextTargetPosition;
+            cameraHolder.localPosition = Vector3.Lerp(cameraHolder.localPosition, targetZoomPosition, Time.deltaTime * zoomSmoothing);
+        }
+        //The below method return if the vector passed as an argument is an valid zoom in the zoom range bounds.
+        private bool IsInZoomBounds(Vector3 position) => position.magnitude > zoomRange.x && position.magnitude < zoomRange.y;
+        #endregion
 
         #region - Camera Range Debug -
         private void OnDrawGizmos()
         {
+            //This method draw an gizmos to debug the camera range.
             if (DrawGizmos)
             {
                 Gizmos.color = Color.red;

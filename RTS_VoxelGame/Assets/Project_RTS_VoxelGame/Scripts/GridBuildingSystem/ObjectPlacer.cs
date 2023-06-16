@@ -11,13 +11,23 @@ namespace NekraliusDevelopmentStudio
         //Code State - (Needs Refactoring, Needs Coments, Needs Improvement)
         //This code represents (Code functionality or code meaning)
 
-        private List<GameObject> placedGameObjects = new List<GameObject>();
+        #region - Singleton Pattern -
+        public static ObjectPlacer Instance;
+        private void Awake() => Instance = this;
+        #endregion
+
+        public List<GameObject> placedGameObjects = new List<GameObject>();
 
         public int PlaceObject(GameObject prefab, Vector3 position)
         {
             GameObject newObject = Instantiate(prefab);
             newObject.transform.position = position;
             placedGameObjects.Add(newObject);
+            return placedGameObjects.Count - 1;
+        }
+        public int PlaceObject(GameObject prefab)
+        {
+            placedGameObjects.Add(prefab);
             return placedGameObjects.Count - 1;
         }
         internal void RemoveObjectAt(int gameObjectIndex)

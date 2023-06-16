@@ -8,18 +8,14 @@ namespace NekraliusDevelopmentStudio
     public static class BuildingSystemUtility
     {
         //Code made by Victor Paulo Melo da Silva - Game Developer - GitHub - https://github.com/Necralius
-        //BuildingSystemUtility - (0.1)
-        //Code State - (Needs Refactoring, Needs Coments, Needs Improvement)
+        //BuildingSystemUtility - (0.5)
+        //State: Functional
         //This code represents (Code functionality or code meaning)
 
         #region - Placement System -
         public class PlacementState : IBuildingState
         {
-            //Code made by Victor Paulo Melo da Silva - Game Developer - GitHub - https://github.com/Necralius
-            //CompleteCodeName - (Code Version)
-            //Code State - (Needs Refactoring, Needs Coments, Needs Improvement)
-            //This code represents (Code functionality or code meaning)
-
+            #region - Placement State Data -
             private int selectedObjectIndex = -2;
             int ID;
             Grid grid;
@@ -30,8 +26,9 @@ namespace NekraliusDevelopmentStudio
             ObjectsDatabaseSO objectDatabase;
 
             ObjectPlacer objectPlacer;
+            #endregion
 
-            #region - Placement State Start Active -
+            #region - Placement State Constructor -
             public PlacementState(int iD, Grid grid, BuildingPreviewSystem previewSystem, ObjectsDatabaseSO objectDatabase, ObjectPlacer objectPlacer, ObjectGridData furnitureData, ObjectGridData floorData)
             {
                 ID = iD;
@@ -109,10 +106,7 @@ namespace NekraliusDevelopmentStudio
                 previewSystem.ShowPlacementRemovePreview();
             }
 
-            public void EndState()
-            {
-                previewSystem.DisablePlacementPreview();
-            }
+            public void EndState() => previewSystem.DisablePlacementPreview();
 
             public void OnAction(Vector3Int gridPosition)
             {
@@ -137,10 +131,7 @@ namespace NekraliusDevelopmentStudio
                 Vector3 cellPosition = grid.CellToWorld(gridPosition);
                 previewSystem.UpdatePosition(cellPosition, CheckSelection(gridPosition));
             }
-            private bool CheckSelection(Vector3Int gridPosition)
-            {
-                return !(furnitureData.CanPlaceObjectAt(gridPosition, Vector2Int.one) && floorData.CanPlaceObjectAt(gridPosition, Vector2Int.one));           
-            }
+            private bool CheckSelection(Vector3Int gridPosition) => !(furnitureData.CanPlaceObjectAt(gridPosition, Vector2Int.one) && floorData.CanPlaceObjectAt(gridPosition, Vector2Int.one)); 
 
             public void UpdateState(Vector3Int gridPosition)
             {
@@ -151,6 +142,7 @@ namespace NekraliusDevelopmentStudio
 
         #endregion
 
+        #region - Object Grid Data -
         public class ObjectGridData
         {
             Dictionary<Vector3Int, PlacementData> placedObjects = new();
@@ -175,10 +167,7 @@ namespace NekraliusDevelopmentStudio
             public bool CanPlaceObjectAt(Vector3Int gridPosition, Vector2Int objectSize)
             {
                 List<Vector3Int> positionToOccupy = CalculatePositions(gridPosition, objectSize);
-                foreach (var pos in positionToOccupy)
-                {
-                    if (placedObjects.ContainsKey(pos)) return false;
-                }
+                foreach (var pos in positionToOccupy) if (placedObjects.ContainsKey(pos)) return false;
                 return true;
             }
             internal int GetRepresentationIndex(Vector3Int gridPosition)
@@ -188,12 +177,10 @@ namespace NekraliusDevelopmentStudio
             }
             internal void RemoveObjectAt(Vector3Int gridPosition)
             {
-                foreach (var pos in placedObjects[gridPosition].occupiedPositions)
-                {
-                    placedObjects.Remove(pos);
-                }
+                foreach (var pos in placedObjects[gridPosition].occupiedPositions) placedObjects.Remove(pos);
             }          
         }
+        #endregion
 
         #region - Placement Data -
         public class PlacementData
