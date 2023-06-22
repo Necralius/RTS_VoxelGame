@@ -28,17 +28,17 @@ namespace NekraliusDevelopmentStudio
         [SerializeField] private GameObject gridCellPrefab;
         [SerializeField] private Transform gridCellContent;
 
-        public bool isInPlacementMode = false;
-
-        ObjectGridData floorData;
-        public ObjectGridData structureData;       
+        [HideInInspector] public ObjectGridData floorData;
+        [HideInInspector] public ObjectGridData structureData;       
 
         [SerializeField] private BuildingPreviewSystem previewSystem;
         [SerializeField] private ObjectPlacer objectPlacer;
 
         private Vector3Int lastDetectedPosition = Vector3Int.zero;
 
-        IBuildingState buildingState;
+        public IBuildingState buildingState;
+
+        public bool isOnPlacementMode;
         #endregion
 
         //================================Methods================================//
@@ -59,16 +59,16 @@ namespace NekraliusDevelopmentStudio
             ChangeBuildingMode(false);                     
         }
         private void Update()
-        {
+        {            
             //The below statements execute all mouse interactions and calculations, first, the system verifies if the placement mode is active, if it is, the mouse position is calculated and the grid detection is deiplayed usiing the building state interface interaction structure.
-            if (isInPlacementMode)
+            if (isOnPlacementMode)
             {
                 Vector3 mousePos = inputManager.GetSelectedMapPosition();
                 Vector3Int gridPosition = buildingGrid.WorldToCell(mousePos);
 
                 //Also, the system detects if the current mouse position is the last detected position, if it is, the system stops the mouse calculation for optimization purpose.
                 if (lastDetectedPosition != gridPosition)
-                {
+                {                  
                     buildingState.UpdateState(gridPosition);
                     lastDetectedPosition = gridPosition;
                 }
@@ -168,8 +168,10 @@ namespace NekraliusDevelopmentStudio
         }
         public void ChangeBuildingMode(bool state) //This method merely deactivate and activate the bulding state using an bool argument pased on the method call.
         {
-            gridCellContent.gameObject.SetActive(state); 
-            isInPlacementMode = state;
+            gridCellContent.gameObject.SetActive(state);
+            isOnPlacementMode = state;
+
+            if (state) ModeManager.Instance.SetMode(ModeType.BuildPlacementMode);
         }
         #endregion
     }

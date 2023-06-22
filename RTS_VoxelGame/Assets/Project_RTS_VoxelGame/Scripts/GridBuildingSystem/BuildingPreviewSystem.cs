@@ -84,7 +84,7 @@ namespace NekraliusDevelopmentStudio
         #endregion
 
         #region - Preview System Remove Interaction -
-        internal void ShowPlacementRemovePreview()
+        internal void StartRemovePreview()
         {
             //This method starts the preview system, but this method is exclusive to the remove building state.
             cellIndicator.SetActive(true);

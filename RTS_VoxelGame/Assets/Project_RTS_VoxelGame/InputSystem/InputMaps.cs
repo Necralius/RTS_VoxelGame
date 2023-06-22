@@ -71,6 +71,15 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LeftShift"",
+                    ""type"": ""Button"",
+                    ""id"": ""348bcafc-a526-41fb-9f8a-49697e973d4c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -238,6 +247,17 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
                     ""action"": ""RightClick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""11e88d12-94b4-43db-98da-40f749427d6b"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeftShift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -251,6 +271,7 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
         m_KeyboardMap_ZoomScroll = m_KeyboardMap.FindAction("ZoomScroll", throwIfNotFound: true);
         m_KeyboardMap_CancelPlacement = m_KeyboardMap.FindAction("CancelPlacement", throwIfNotFound: true);
         m_KeyboardMap_RightClick = m_KeyboardMap.FindAction("RightClick", throwIfNotFound: true);
+        m_KeyboardMap_LeftShift = m_KeyboardMap.FindAction("LeftShift", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -315,6 +336,7 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
     private readonly InputAction m_KeyboardMap_ZoomScroll;
     private readonly InputAction m_KeyboardMap_CancelPlacement;
     private readonly InputAction m_KeyboardMap_RightClick;
+    private readonly InputAction m_KeyboardMap_LeftShift;
     public struct KeyboardMapActions
     {
         private @InputMaps m_Wrapper;
@@ -324,6 +346,7 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
         public InputAction @ZoomScroll => m_Wrapper.m_KeyboardMap_ZoomScroll;
         public InputAction @CancelPlacement => m_Wrapper.m_KeyboardMap_CancelPlacement;
         public InputAction @RightClick => m_Wrapper.m_KeyboardMap_RightClick;
+        public InputAction @LeftShift => m_Wrapper.m_KeyboardMap_LeftShift;
         public InputActionMap Get() { return m_Wrapper.m_KeyboardMap; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -348,6 +371,9 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
                 @RightClick.started -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnRightClick;
                 @RightClick.performed -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnRightClick;
                 @RightClick.canceled -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnRightClick;
+                @LeftShift.started -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnLeftShift;
+                @LeftShift.performed -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnLeftShift;
+                @LeftShift.canceled -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnLeftShift;
             }
             m_Wrapper.m_KeyboardMapActionsCallbackInterface = instance;
             if (instance != null)
@@ -367,6 +393,9 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
                 @RightClick.started += instance.OnRightClick;
                 @RightClick.performed += instance.OnRightClick;
                 @RightClick.canceled += instance.OnRightClick;
+                @LeftShift.started += instance.OnLeftShift;
+                @LeftShift.performed += instance.OnLeftShift;
+                @LeftShift.canceled += instance.OnLeftShift;
             }
         }
     }
@@ -378,5 +407,6 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
         void OnZoomScroll(InputAction.CallbackContext context);
         void OnCancelPlacement(InputAction.CallbackContext context);
         void OnRightClick(InputAction.CallbackContext context);
+        void OnLeftShift(InputAction.CallbackContext context);
     }
 }

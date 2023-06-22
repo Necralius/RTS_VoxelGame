@@ -43,7 +43,8 @@ namespace NekraliusDevelopmentStudio
         public Vector2 Look { get; private set; }
         public float scrollValue { get; private set; }
         public bool rightClick { get; private set; }
-        public bool cancelPlacement { get; private set; }
+        public bool returnMode { get; private set; }
+        public bool leftShift { get; private set; }
         #endregion
 
         #region - Input Actions -
@@ -51,7 +52,8 @@ namespace NekraliusDevelopmentStudio
         private InputAction lookAction;
         private InputAction scrollAction;
         private InputAction rightClickAction;
-        private InputAction cancelPlacementAction;
+        private InputAction returnModeAction;
+        private InputAction leftShiftAction;
         #endregion
 
         void Start()
@@ -63,32 +65,41 @@ namespace NekraliusDevelopmentStudio
             lookAction = currentMap.FindAction("Look");
             scrollAction = currentMap.FindAction("ZoomScroll");
             rightClickAction = currentMap.FindAction("RightClick");
-            cancelPlacementAction = currentMap.FindAction("CancelPlacement");
+            returnModeAction = currentMap.FindAction("CancelPlacement");
+            leftShiftAction = currentMap.FindAction("LeftShift");
 
             moveAction.performed += onMove;
             lookAction.performed += onLook;
             scrollAction.performed += onScroll;
             rightClickAction.performed += onRightClick;
-            cancelPlacementAction.performed += onCancelPlacement;
+            returnModeAction.performed += onCancelPlacement;
+            leftShiftAction.performed += onLeftShift;
+
 
             moveAction.canceled += onMove;
             lookAction.canceled += onLook;
             scrollAction.canceled += onScroll;
             rightClickAction.canceled += onRightClick;
-            cancelPlacementAction.canceled += onCancelPlacement;
+            returnModeAction.canceled += onCancelPlacement;
+            leftShiftAction.canceled += onLeftShift;
         }
         private void Update()
         {
             if (Input.GetMouseButtonDown(0)) OnClicked?.Invoke();
-            if (cancelPlacement) OnExit?.Invoke();
+
+            if (returnMode)
+            {
+                ModeManager.Instance.ResetMode();
+                OnExit?.Invoke();
+            }
         }
-        public bool IsPointerOverUI() => EventSystem.current.IsPointerOverGameObject();
         private void onLook(InputAction.CallbackContext context) => Look = context.ReadValue<Vector2>();
         private void onMove(InputAction.CallbackContext context) => Move = context.ReadValue<Vector2>();
         private void onScroll(InputAction.CallbackContext context) => scrollValue = context.ReadValue<float>();
         private void onRightClick(InputAction.CallbackContext context) => rightClick = context.ReadValueAsButton();
-        private void onCancelPlacement(InputAction.CallbackContext context) => cancelPlacement = context.ReadValueAsButton();
-
+        private void onCancelPlacement(InputAction.CallbackContext context) => returnMode = context.ReadValueAsButton();
+        private void onLeftShift(InputAction.CallbackContext context) => leftShift = context.ReadValueAsButton();
+        public bool IsPointerOverUI() => EventSystem.current.IsPointerOverGameObject();
         public Vector3 GetSelectedMapPosition()
         {
             Vector3 mousePos = Input.mousePosition;

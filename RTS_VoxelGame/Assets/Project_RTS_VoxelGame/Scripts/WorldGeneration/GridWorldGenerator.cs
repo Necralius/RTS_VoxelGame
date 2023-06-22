@@ -6,6 +6,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using static NekraliusDevelopmentStudio.NDS_Utility;
 using static NekraliusDevelopmentStudio.BuildingSystemUtility;
+using Unity.AI.Navigation;
 
 namespace NekraliusDevelopmentStudio
 {
@@ -47,6 +48,10 @@ namespace NekraliusDevelopmentStudio
         public bool DrawGizmos = false;
         #endregion
 
+        #region - Navigation System -
+        public NavMeshSurface surface;
+        #endregion
+
         //================================Methods================================//
 
         #region - BuiltIn Methods -
@@ -86,6 +91,8 @@ namespace NekraliusDevelopmentStudio
             GenerateAllStructures(currentMap);
             BuildingSystem.Instance.GenerateGridDraw();
             #endregion
+
+            surface.BuildNavMesh();
         }
         #endregion
 
@@ -423,10 +430,8 @@ namespace NekraliusDevelopmentStudio
                     }
                 }
             }
+            currentMap.mapCompleteData = grid;
             #endregion
-
-
-
         }
         #endregion
 
