@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace NekraliusDevelopmentStudio
 {
-    [CustomEditor(typeof(SelectableResource))]
+    [CustomEditor(typeof(SelectableItemResource))]
     public class SelectableResourceCE : Editor
     {
         //Code made by Victor Paulo Melo da Silva - Game Developer - GitHub - https://github.com/Necralius
@@ -18,7 +18,7 @@ namespace NekraliusDevelopmentStudio
         {
             base.OnInspectorGUI();
 
-            SelectableResource selectableResource = (SelectableResource)target;
+            SelectableItemResource selectableResource = (SelectableItemResource)target;
 
             if (selectableResource.GetWithRandomFactor)
             {

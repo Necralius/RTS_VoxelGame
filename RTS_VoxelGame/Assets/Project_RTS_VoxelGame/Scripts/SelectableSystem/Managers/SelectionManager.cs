@@ -51,26 +51,30 @@ namespace NekraliusDevelopmentStudio
 
         public void SelectAction()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (ModeManager.Instance.IsOnState(ModeType.ViewMode))
             {
-                Ray ray = inputManager.mainSceneCamera.ScreenPointToRay(Input.mousePosition);
-
-                if (Physics.Raycast(ray, out RaycastHit hit, 50000.0f))
+                if (Input.GetMouseButtonDown(0))
                 {
-                    if (hit.transform.GetComponent<Selectable>())
+                    if (inputManager.IsPointerOverUI()) return;
+                    Ray ray = inputManager.mainSceneCamera.ScreenPointToRay(Input.mousePosition);
+
+                    if (Physics.Raycast(ray, out RaycastHit hit, 50000.0f))
                     {
-                        if (inputManager.leftShift)
+                        if (hit.transform.GetComponent<Selectable>())
                         {
-                            if (hit.transform.GetComponent<Selectable>().isSelected) Deselect(hit.transform.gameObject.GetInstanceID());
-                            else AddSelected(hit.transform.gameObject);
+                            if (inputManager.leftShift)
+                            {
+                                if (hit.transform.GetComponent<Selectable>().isSelected) Deselect(hit.transform.gameObject.GetInstanceID());
+                                else AddSelected(hit.transform.gameObject);
+                            }
+                            else
+                            {
+                                DeselectAll();
+                                AddSelected(hit.transform.gameObject);
+                            }
                         }
-                        else
-                        {
-                            DeselectAll();
-                            AddSelected(hit.transform.gameObject);
-                        }
+                        else if (!inputManager.leftShift) DeselectAll();
                     }
-                    else if (!inputManager.leftShift) DeselectAll();
                 }
             }
         }

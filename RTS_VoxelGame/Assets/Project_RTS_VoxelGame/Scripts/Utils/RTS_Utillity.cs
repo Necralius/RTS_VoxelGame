@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace NekraliusDevelopmentStudio
 {
@@ -15,6 +17,19 @@ namespace NekraliusDevelopmentStudio
     {
         ViewMode,
         BuildPlacementMode,
-        PeasantSpawningMode
+        PeasantSpawningMode,
+        PeasantManagmentMode,
+        PeasantGoToMode
+    }
+
+    [Serializable]
+    public class OrderType
+    {
+        public string orderName = "Order_Name";
+
+        public Sprite orderIcon;
+
+        [Header("Order Events")]
+        public UnityEvent orderAction;
     }
 }

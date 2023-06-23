@@ -30,7 +30,7 @@ Transform:
   m_Children:
   - {fileID: 8351953452809713257}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1792673409635579747
 PrefabInstance:
@@ -297,6 +297,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   resource: {fileID: 4663919386194378626}
   visualObject: {fileID: 1308371555775235994}
+  isSelected: 0
 --- !u!114 &4663919386194378626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -311,8 +312,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SelectableName: Pine Tree
   SelectableDescription: Pine tree, if collected, gives wood
-  itemMinQuantity: 25.882355
-  itemMaxQuantity: 70.98036
+  itemMinQuantity: 29.425661
+  itemMaxQuantity: 74.52367
   quantity: 0
   GetWithRandomFactor: 1
 --- !u!4 &8351953452809713257 stripped

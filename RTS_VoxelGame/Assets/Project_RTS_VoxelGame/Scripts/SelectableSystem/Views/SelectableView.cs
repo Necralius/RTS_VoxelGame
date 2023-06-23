@@ -22,8 +22,14 @@ namespace NekraliusDevelopmentStudio
         public TextMeshProUGUI selectableDescription;
         public TextMeshProUGUI itensSelected;
 
-        private SelectableResource selectable;
+        private SelectableResourceModel selectable;
+        
         [SerializeField] private GameObject viewCont;
+
+        #region - Order List -
+        [SerializeField] private Transform orderViewContent;
+        [SerializeField] private GameObject orderViewPrefab;
+        #endregion
 
         public void EditingName() => selectable.SelectableName = nameInput.text;
 
@@ -38,9 +44,10 @@ namespace NekraliusDevelopmentStudio
             viewCont.SetActive(false);
             selectable = null;
         }
-        public void ActivateView(SelectableResource selectableModel)
+        public void ActivateView(SelectableResourceModel selectableModel)
         {
             selectable = selectableModel;
+            SpawnOrders();
             UpdateView();
         }
         public void UpdateView()
@@ -54,5 +61,16 @@ namespace NekraliusDevelopmentStudio
                 itensSelected.text = string.Format("X{0}", SelectionManager.Instance.selectedTable.Count);
             }
         }
+        private void SpawnOrders()
+        {
+            foreach (Transform objTrans in orderViewContent) Destroy(objTrans.gameObject);// -> Destroy all childs.
+
+            if (selectable.orders.Count > 0)
+            {
+                foreach (OrderType order in selectable.orders) Instantiate(orderViewPrefab, orderViewContent).GetComponent<ResourceOrderView>().SetUp(order.orderName, order.orderIcon, order.orderAction);
+            }
+            else return;
+        }
+
     }
 }

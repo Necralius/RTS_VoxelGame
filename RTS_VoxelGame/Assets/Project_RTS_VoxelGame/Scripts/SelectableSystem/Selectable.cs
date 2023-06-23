@@ -11,14 +11,14 @@ namespace NekraliusDevelopmentStudio
         //Code State - (Needs Refactoring, Needs Coments, Needs Improvement)
         //This code represents (Code functionality or code meaning)
 
-        public SelectableResource resource;
+        public SelectableResourceModel resource;
         public GameObject visualObject;
 
         public bool isSelected = false;
 
         private void Start()
         {           
-            resource = GetComponent<SelectableResource>();
+            resource = GetComponent<SelectableResourceModel>();
         }
         public void OnSelect()
         {

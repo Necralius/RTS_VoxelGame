@@ -23,7 +23,6 @@ namespace NekraliusDevelopmentStudio
 
         private InputManager inputManager => InputManager.Instance;
 
-        public Grid mapGrid;
         MapData mapData => GridWorldGenerator.Instance.currentMap;
 
         private void SpawnPeasantModel(Vector3 peasantPosition)
@@ -34,7 +33,7 @@ namespace NekraliusDevelopmentStudio
         private void SpawnPesantOnGrid()
         {
             Vector3 mousePos = inputManager.GetSelectedMapPosition();
-            Vector3Int gridPosition = mapGrid.WorldToCell(mousePos);
+            Vector3Int gridPosition = BuildingSystem.Instance.buildingGrid.WorldToCell(mousePos);
 
             if (CanSpawnPeasantAt(mapData.mapCompleteData[gridPosition.x, gridPosition.y], gridPosition)) SpawnPeasantModel(gridPosition);
             else Debug.Log("Cannot Spawn peasant at this place!");

@@ -25,9 +25,6 @@ namespace NekraliusDevelopmentStudio
         public UnityAction OnInteractEvent;
         public UnityAction OnInteractEndEvent;
 
-
-
-
         public void GoTo(Vector3 position, bool expressOrder)
         {
             if (expressOrder) agent.SetDestination(position);

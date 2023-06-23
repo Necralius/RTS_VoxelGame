@@ -21,7 +21,7 @@ namespace NekraliusDevelopmentStudio
 
         #region - Building System Data and Dependencies -
         private InputManager inputManager => InputManager.Instance;
-        [SerializeField] private Grid buildingGrid;
+        public Grid buildingGrid;
 
         public ObjectsDatabaseSO objectDatabase;
 
