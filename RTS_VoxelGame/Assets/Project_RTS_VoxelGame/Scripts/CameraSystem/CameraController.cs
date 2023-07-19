@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace NekraliusDevelopmentStudio
 {
-    public class CameraController : MonoBehaviour
+    public class CameraController : MonoBehaviour, ILoadableData
     {
         //Code made by Victor Paulo Melo da Silva - Game Developer - GitHub - https://github.com/Necralius
         //CameraController - (0.3)
@@ -146,6 +146,16 @@ namespace NekraliusDevelopmentStudio
                 Gizmos.DrawSphere(transform.position, 5f);
                 Gizmos.DrawWireCube(startPos, new Vector3(cameraRange.x * 2f, 5f, cameraRange.y * 2f));
             }
+        }
+        #endregion
+
+        #region - Data Load -
+        public void Load(GameStateData data)
+        {
+            transform.position = data.cameraData.Position;
+            transform.rotation = data.cameraData.Rotation;
+            transform.localScale = data.cameraData.Scale;
+            Debug.Log("Loading Data!");
         }
         #endregion
     }

@@ -16,6 +16,8 @@ namespace NekraliusDevelopmentStudio
         [TextArea(3, 10)]
         public string SelectableDescription = "Item_Description";
 
+        public bool isSelected = false;
+
         public List<OrderType> orders;
 
         public void ExecuteOrder(OrderType order)

@@ -21,12 +21,15 @@ namespace NekraliusDevelopmentStudio
         #endregion
 
         #region - Object Placement -
-        public int PlaceObject(GameObject prefab, Vector3 position)
+        public int PlaceObject(GameObject prefab, Vector3 position, Vector3 eulers)
         {
             //This method instatiate the object prefab in the 3D World using an prefab and an position as the main data, also, the method saves this object data on
             //an list of GameObjects.
-            GameObject newObject = Instantiate(prefab);
+            GameObject newObject = Instantiate(prefab, transform);
             newObject.transform.position = position;
+            newObject.transform.Rotate(eulers);
+            //newObject.transform.GetChild(0).gameObject.transform.eulerAngles = eulers;
+
             placedGameObjects.Add(newObject);
             return placedGameObjects.Count - 1;
         }

@@ -121,6 +121,8 @@ namespace NekraliusDevelopmentStudio
 
             inputManager.OnClicked += PlaceStructure;
             inputManager.OnExit += StopPlacement;
+
+            AudioManager.Instance.PlayClip(AudioManager.Instance.audioDatabase.GetClip("BuildRemoveMode"), AudioType.SoundEffect);
         }
         #endregion
 

@@ -1,5 +1,37 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &18205938
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 18205939}
+  m_Layer: 0
+  m_Name: Cell_Indicator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &18205939
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18205938}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.41, y: -0.10103, z: -2.78}
+  m_LocalScale: {x: 1.1641785, y: 1.1641785, z: 1.1641785}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2008363417054757646}
+  m_Father: {fileID: 8351953452809713257}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8446312320213215889
 GameObject:
   m_ObjectHideFlags: 0
@@ -30,7 +62,7 @@ Transform:
   m_Children:
   - {fileID: 8351953452809713257}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1792673409635579747
 PrefabInstance:
@@ -38,7 +70,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8351953452809713257}
+    m_TransformParent: {fileID: 18205939}
     m_Modifications:
     - target: {fileID: 234179573278684269, guid: 1bbb6887e7353444183a27d97de8e383,
         type: 3}
@@ -47,8 +79,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 234179573278684269, guid: 1bbb6887e7353444183a27d97de8e383,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4.623598
+      objectReference: {fileID: 0}
+    - target: {fileID: 234179573278684269, guid: 1bbb6887e7353444183a27d97de8e383,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 4.623598
+      objectReference: {fileID: 0}
+    - target: {fileID: 234179573278684269, guid: 1bbb6887e7353444183a27d97de8e383,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4.623598
+      objectReference: {fileID: 0}
+    - target: {fileID: 234179573278684269, guid: 1bbb6887e7353444183a27d97de8e383,
+        type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.52
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 234179573278684269, guid: 1bbb6887e7353444183a27d97de8e383,
         type: 3}
@@ -58,7 +105,7 @@ PrefabInstance:
     - target: {fileID: 234179573278684269, guid: 1bbb6887e7353444183a27d97de8e383,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.49
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 234179573278684269, guid: 1bbb6887e7353444183a27d97de8e383,
         type: 3}
@@ -103,7 +150,7 @@ PrefabInstance:
     - target: {fileID: 777044695798296825, guid: 1bbb6887e7353444183a27d97de8e383,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -241,7 +288,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 495199302255225335, guid: 06573cc19fb2e4a479092a9b4687b26c,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2008363417054757646}
+      addedObject: {fileID: 18205939}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4470068468865549885, guid: 06573cc19fb2e4a479092a9b4687b26c,
         type: 3}
@@ -296,8 +343,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resource: {fileID: 4663919386194378626}
-  visualObject: {fileID: 1308371555775235994}
+  visualObject: {fileID: 18205938}
   isSelected: 0
+  selectionType: 0
 --- !u!114 &4663919386194378626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,8 +360,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SelectableName: Pine Tree
   SelectableDescription: Pine tree, if collected, gives wood
+  isSelected: 0
+  orders: []
   itemMinQuantity: 29.425661
   itemMaxQuantity: 74.52367
+  resourceType: 0
   quantity: 0
   GetWithRandomFactor: 1
 --- !u!4 &8351953452809713257 stripped

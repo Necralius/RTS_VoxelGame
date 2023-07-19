@@ -14,7 +14,8 @@ namespace NekraliusDevelopmentStudio
         //This code represents (Code functionality or code meaning)
 
         #region - Dependencies -
-        private NavMeshAgent agent;
+        private NavMeshAgent agent => GetComponent<NavMeshAgent>();
+        private Animator anim => GetComponent<Animator>();
         #endregion
 
         #region - Navigation System -
@@ -24,6 +25,8 @@ namespace NekraliusDevelopmentStudio
 
         public UnityAction OnInteractEvent;
         public UnityAction OnInteractEndEvent;
+
+        public bool isWalking = false;
 
         public void GoTo(Vector3 position, bool expressOrder)
         {
@@ -36,13 +39,23 @@ namespace NekraliusDevelopmentStudio
         {
             if (waitForDestination)
             {
-                if (agent.pathPending) return;
+                if (agent.pathPending)
+                {
+                    isWalking = false;
+                    return;
+                }
                 else
                 {
                     agent.SetDestination(newDestination);
                     waitForDestination = false;
+                    isWalking = true;
                 }
             }
+            AnimationUpdates();
+        }
+        private void AnimationUpdates()
+        {
+            anim.SetBool("IsWalking", isWalking);
         }
 
         public void Interact()

@@ -45,6 +45,7 @@ namespace NekraliusDevelopmentStudio
         public bool rightClick { get; private set; }
         public bool returnMode { get; private set; }
         public bool leftShift { get; private set; }
+        public bool rotateObject { get; private set; }
         #endregion
 
         #region - Input Actions -
@@ -54,6 +55,7 @@ namespace NekraliusDevelopmentStudio
         private InputAction rightClickAction;
         private InputAction returnModeAction;
         private InputAction leftShiftAction;
+        private InputAction rotateActionAction;
         #endregion
 
         void Start()
@@ -67,6 +69,7 @@ namespace NekraliusDevelopmentStudio
             rightClickAction = currentMap.FindAction("RightClick");
             returnModeAction = currentMap.FindAction("CancelPlacement");
             leftShiftAction = currentMap.FindAction("LeftShift");
+            rotateActionAction = currentMap.FindAction("RotateObject");
 
             moveAction.performed += onMove;
             lookAction.performed += onLook;
@@ -74,7 +77,7 @@ namespace NekraliusDevelopmentStudio
             rightClickAction.performed += onRightClick;
             returnModeAction.performed += onCancelPlacement;
             leftShiftAction.performed += onLeftShift;
-
+            rotateActionAction.performed += onObjectRotate;
 
             moveAction.canceled += onMove;
             lookAction.canceled += onLook;
@@ -82,15 +85,25 @@ namespace NekraliusDevelopmentStudio
             rightClickAction.canceled += onRightClick;
             returnModeAction.canceled += onCancelPlacement;
             leftShiftAction.canceled += onLeftShift;
+            rotateActionAction.canceled += onObjectRotate;
         }
+
         private void Update()
         {
             if (Input.GetMouseButtonDown(0)) OnClicked?.Invoke();
 
-            if (returnMode)
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                ModeManager.Instance.ResetMode();
-                OnExit?.Invoke();
+                if (ModeManager.Instance.IsOnState(ModeType.ViewMode))
+                {
+                    if (GameManager.Instance.gameIsPaused) GameManager.Instance.ResumeGame();
+                    else GameManager.Instance.PauseGame();
+                }
+                else
+                {
+                    ModeManager.Instance.ResetMode();
+                    OnExit?.Invoke();
+                }
             }
         }
         private void onLook(InputAction.CallbackContext context) => Look = context.ReadValue<Vector2>();
@@ -99,6 +112,7 @@ namespace NekraliusDevelopmentStudio
         private void onRightClick(InputAction.CallbackContext context) => rightClick = context.ReadValueAsButton();
         private void onCancelPlacement(InputAction.CallbackContext context) => returnMode = context.ReadValueAsButton();
         private void onLeftShift(InputAction.CallbackContext context) => leftShift = context.ReadValueAsButton();
+        private void onObjectRotate(InputAction.CallbackContext context) => rotateObject = context.ReadValueAsButton();
         public bool IsPointerOverUI() => EventSystem.current.IsPointerOverGameObject();
         public Vector3 GetSelectedMapPosition()
         {

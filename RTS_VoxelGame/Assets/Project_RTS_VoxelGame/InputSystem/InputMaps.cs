@@ -80,6 +80,15 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RotateObject"",
+                    ""type"": ""Button"",
+                    ""id"": ""34279b06-3eff-44f5-a836-20fe5b04224e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -258,6 +267,17 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
                     ""action"": ""LeftShift"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""66555086-ce2f-4bee-8e13-7472422818a1"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotateObject"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -272,6 +292,7 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
         m_KeyboardMap_CancelPlacement = m_KeyboardMap.FindAction("CancelPlacement", throwIfNotFound: true);
         m_KeyboardMap_RightClick = m_KeyboardMap.FindAction("RightClick", throwIfNotFound: true);
         m_KeyboardMap_LeftShift = m_KeyboardMap.FindAction("LeftShift", throwIfNotFound: true);
+        m_KeyboardMap_RotateObject = m_KeyboardMap.FindAction("RotateObject", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -337,6 +358,7 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
     private readonly InputAction m_KeyboardMap_CancelPlacement;
     private readonly InputAction m_KeyboardMap_RightClick;
     private readonly InputAction m_KeyboardMap_LeftShift;
+    private readonly InputAction m_KeyboardMap_RotateObject;
     public struct KeyboardMapActions
     {
         private @InputMaps m_Wrapper;
@@ -347,6 +369,7 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
         public InputAction @CancelPlacement => m_Wrapper.m_KeyboardMap_CancelPlacement;
         public InputAction @RightClick => m_Wrapper.m_KeyboardMap_RightClick;
         public InputAction @LeftShift => m_Wrapper.m_KeyboardMap_LeftShift;
+        public InputAction @RotateObject => m_Wrapper.m_KeyboardMap_RotateObject;
         public InputActionMap Get() { return m_Wrapper.m_KeyboardMap; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -374,6 +397,9 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
                 @LeftShift.started -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnLeftShift;
                 @LeftShift.performed -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnLeftShift;
                 @LeftShift.canceled -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnLeftShift;
+                @RotateObject.started -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnRotateObject;
+                @RotateObject.performed -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnRotateObject;
+                @RotateObject.canceled -= m_Wrapper.m_KeyboardMapActionsCallbackInterface.OnRotateObject;
             }
             m_Wrapper.m_KeyboardMapActionsCallbackInterface = instance;
             if (instance != null)
@@ -396,6 +422,9 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
                 @LeftShift.started += instance.OnLeftShift;
                 @LeftShift.performed += instance.OnLeftShift;
                 @LeftShift.canceled += instance.OnLeftShift;
+                @RotateObject.started += instance.OnRotateObject;
+                @RotateObject.performed += instance.OnRotateObject;
+                @RotateObject.canceled += instance.OnRotateObject;
             }
         }
     }
@@ -408,5 +437,6 @@ public partial class @InputMaps : IInputActionCollection2, IDisposable
         void OnCancelPlacement(InputAction.CallbackContext context);
         void OnRightClick(InputAction.CallbackContext context);
         void OnLeftShift(InputAction.CallbackContext context);
+        void OnRotateObject(InputAction.CallbackContext context);
     }
 }

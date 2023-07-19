@@ -45,10 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allPeasantsUnits: []
-  peasantPrefab: {fileID: 7631946192245021357, guid: a5b627af071045446a7d0cecd1a79253,
+  peasantPrefab: {fileID: 1730070873831207843, guid: 149ddafae3eba16458503c378bc7e703,
     type: 3}
-  mapGrid: {fileID: 8693897435724870361}
-  inSpawnMode: 0
 --- !u!1 &8693897435819932687
 GameObject:
   m_ObjectHideFlags: 0
@@ -339,6 +337,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 12158544}
+    - targetCorrespondingSourceObject: {fileID: 7339859098332949746, guid: c3267a3a6fc104e429f40e5512955716,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8693897434972135969}
   m_SourcePrefab: {fileID: 100100000, guid: c3267a3a6fc104e429f40e5512955716, type: 3}
 --- !u!4 &8693897434869301917 stripped
 Transform:
@@ -366,6 +368,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedTable:
     _serializedPairs: []
+  mouseFollower: {fileID: 0}
+  xOffset: 40
+  yOffset: 50
+  isOverSelectable: 0
 --- !u!114 &12158544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -379,6 +385,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentMode: 0
+--- !u!114 &8693897434972135969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8693897434869301918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e80e94b435abe7243b3fb41b5e809d01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  woodQuantityDisplay: {fileID: 0}
+  metalQuantityDisplay: {fileID: 0}
+  addFeedback: {fileID: 0}
+  removeFeedback: {fileID: 0}
 --- !u!1001 &2166607555347121015
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -468,12 +490,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2166607555347121015}
   m_PrefabAsset: {fileID: 0}
---- !u!156049354 &8693897435724870361 stripped
-Grid:
-  m_CorrespondingSourceObject: {fileID: 7401590879245037998, guid: bf5c6bb162f51a14d9f74bc2717c7cd1,
-    type: 3}
-  m_PrefabInstance: {fileID: 2166607555347121015}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8693897436418196143 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7401590878592451032, guid: bf5c6bb162f51a14d9f74bc2717c7cd1,
@@ -547,6 +563,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1573578729061699734, guid: 811677c22634b1a4a8ea6757a53b1131,
+        type: 3}
+      propertyPath: zoomRange.x
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 1573578729061699734, guid: 811677c22634b1a4a8ea6757a53b1131,
         type: 3}

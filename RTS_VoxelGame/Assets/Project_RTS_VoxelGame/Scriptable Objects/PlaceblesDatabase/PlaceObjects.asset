@@ -13,27 +13,71 @@ MonoBehaviour:
   m_Name: PlaceObjects
   m_EditorClassIdentifier: 
   objectsData:
-  - Name: Floor
+  - Name: WallWithFlag
     ID: 0
-    Size: {x: 1, y: 1}
-    prefab: {fileID: 175886647813805099, guid: 6bafb9556d35ba840bebea4eea7d34c2, type: 3}
-  - Name: Big Bed
-    ID: 1
-    Size: {x: 2, y: 2}
-    prefab: {fileID: 3487007735555770654, guid: 4721f1b576334dc46b3c72470bf613e3,
-      type: 3}
-  - Name: Wood Table
-    ID: 2
     Size: {x: 2, y: 1}
-    prefab: {fileID: 3493615974341626966, guid: c8183485a28237d4385a3c7ef8659faa,
+    prefab: {fileID: 4685008824785700828, guid: c13571f3895fb8d41a7e7d40ab26d360,
       type: 3}
-  - Name: Wood Chair
+    buildNeeds: []
+  - Name: WallWithDoor
+    ID: 1
+    Size: {x: 2, y: 1}
+    prefab: {fileID: 2565393146284704399, guid: 142daf707a5fd2c4aa7226e206d2a058,
+      type: 3}
+    buildNeeds: []
+  - Name: ArcherTower
+    ID: 2
+    Size: {x: 1, y: 1}
+    prefab: {fileID: 6564053159913726816, guid: 4005fc00490fb2d438c915d074c8b3d7,
+      type: 3}
+    buildNeeds: []
+  - Name: StoneFence
     ID: 3
     Size: {x: 1, y: 1}
-    prefab: {fileID: 4428052050468720457, guid: e033e50487fb016449143cd70d837387,
+    prefab: {fileID: 2988681381540104657, guid: 3c437ecce7c2cc0408cb4e29c2979dd0,
       type: 3}
+    buildNeeds: []
+  - Name: Pirate Tower
+    ID: 4
+    Size: {x: 1, y: 1}
+    prefab: {fileID: 7576851301535545955, guid: ee5a7c5d7ca6ea448b80e96ca3ff51b3,
+      type: 3}
+    buildNeeds:
+    - type: 0
+      quantity: 15
+    - type: 1
+      quantity: 15
+  - Name: BasicHouse
+    ID: 5
+    Size: {x: 1, y: 1}
+    prefab: {fileID: 5543060327087220807, guid: 972d0ba32cd36c842b03c05ffd7a50b5,
+      type: 3}
+    buildNeeds:
+    - type: 0
+      quantity: 20
+    - type: 0
+      quantity: 25
+  - Name: ArcherTowerWindow
+    ID: 6
+    Size: {x: 1, y: 1}
+    prefab: {fileID: 3608925961918012142, guid: 7a82fd4d567729840856d141bdafa382,
+      type: 3}
+    buildNeeds: []
+  - Name: Wall
+    ID: 7
+    Size: {x: 2, y: 1}
+    prefab: {fileID: 8392470746970416729, guid: 7d6d27619d9825c428414ad2ab00bee6,
+      type: 3}
+    buildNeeds: []
+  - Name: Rock
+    ID: 98
+    Size: {x: 1, y: 1}
+    prefab: {fileID: 5672957489515052152, guid: 066da98ed89b8404193b784a3eb14829,
+      type: 3}
+    buildNeeds: []
   - Name: Tree
     ID: 99
     Size: {x: 1, y: 1}
     prefab: {fileID: 8446312320213215889, guid: d135df486c5a00d4fb03a6aa87be32e8,
       type: 3}
+    buildNeeds: []

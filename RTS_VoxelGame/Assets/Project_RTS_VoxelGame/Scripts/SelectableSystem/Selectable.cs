@@ -16,6 +16,8 @@ namespace NekraliusDevelopmentStudio
 
         public bool isSelected = false;
 
+        public SelectionType selectionType;
+        
         private void Start()
         {           
             resource = GetComponent<SelectableResourceModel>();
@@ -24,6 +26,7 @@ namespace NekraliusDevelopmentStudio
         {
             visualObject.SetActive(true);
             isSelected = true;
+            resource.isSelected = true;
         }
 
         public void OnDeselect(bool deselectAll)
@@ -32,6 +35,7 @@ namespace NekraliusDevelopmentStudio
 
             SelectableView.Instance.UpdateView();
             isSelected = false;
+            resource.isSelected = false;
         }
     }
 }

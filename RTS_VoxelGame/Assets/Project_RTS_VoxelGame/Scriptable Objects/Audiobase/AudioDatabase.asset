@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e0423f4270c1544c82a993ffcb8b681, type: 3}
+  m_Name: AudioDatabase
+  m_EditorClassIdentifier: 
+  clipData:
+    _serializedPairs:
+    - key: PlaceStructure
+      value: {fileID: 8300000, guid: 8d47b8148224ca94084ce43eb1d9c4d7, type: 3}
+    - key: RemoveStructure
+      value: {fileID: 8300000, guid: 2cd344c784495e846be9417323a09d21, type: 3}
+    - key: ButtonClick
+      value: {fileID: 8300000, guid: 8df8b7690e8185f4db682b812bc0bb0d, type: 3}
+    - key: ButtonSelect
+      value: {fileID: 8300000, guid: 81124813ded3a8d46834a6154dc5ea7b, type: 3}
+    - key: BuildRemoveMode
+      value: {fileID: 8300000, guid: 61b6652d4b2b0c047a69f11602b2d533, type: 3}
+    - key: BuildRemoveFail
+      value: {fileID: 8300000, guid: 61b6652d4b2b0c047a69f11602b2d533, type: 3}

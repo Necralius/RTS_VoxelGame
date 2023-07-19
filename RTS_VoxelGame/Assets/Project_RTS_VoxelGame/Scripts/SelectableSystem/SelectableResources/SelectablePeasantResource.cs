@@ -17,6 +17,7 @@ namespace NekraliusDevelopmentStudio
 
         #region - Dependencies -
         private NavMeshAgent agent;
+        private Animator anim => GetComponent<Animator>();
         #endregion
 
         #region - Navigation System -
@@ -28,7 +29,11 @@ namespace NekraliusDevelopmentStudio
 
         private LineRenderer pathRenderer;
 
+        public bool isWalking = false;
+
         MapData mapData => GridWorldGenerator.Instance.currentMap;
+
+        public SelectableItemResource itemToGet;
 
         private void Start()
         {
@@ -75,6 +80,13 @@ namespace NekraliusDevelopmentStudio
             return floorData.CanPlaceObjectAt(GridPos, new Vector2Int(1, 1)) && structureData.CanPlaceObjectAt(GridPos, new Vector2Int(1, 1)) && !cell.cellOcupied;
         }
 
+        public void MineResource()
+        {
+
+
+
+        }
+
         public void Update()
         {
             if (ModeManager.Instance.IsOnState(ModeType.PeasantGoToMode))
@@ -92,15 +104,19 @@ namespace NekraliusDevelopmentStudio
                 }
                 else lastPos = gridPosition;
 
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(1))
                 {
                     GoTo(gridPosition);
                     agent.isStopped = false;
+                    ModeManager.Instance.ResetMode();
                 }     
-                if (agent.hasPath) DrawPath();
             }
 
-            pathRenderer.enabled = ModeManager.Instance.IsOnState(ModeType.PeasantGoToMode);
+            isWalking = !(agent.velocity == Vector3.zero);
+
+            if (agent.hasPath) DrawPath();
+
+            pathRenderer.enabled = isSelected;
 
             if (waitForDestination)
             {
@@ -112,6 +128,8 @@ namespace NekraliusDevelopmentStudio
                     waitForDestination = false;
                 }
             }
+
+            anim.SetBool("IsWalking", isWalking);
         }
     }
 }

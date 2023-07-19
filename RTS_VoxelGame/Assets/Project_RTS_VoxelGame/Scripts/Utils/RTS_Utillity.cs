@@ -19,7 +19,37 @@ namespace NekraliusDevelopmentStudio
         BuildPlacementMode,
         PeasantSpawningMode,
         PeasantManagmentMode,
-        PeasantGoToMode
+        PeasantGoToMode,
+    }
+    public enum ResourceType
+    {
+        RawWood = 0,
+        RawMetal = 1
+    }
+    public enum SelectionType
+    {
+        WoodResource,
+        MetalResource,
+        PeasantResource
+    }
+    public enum PeasantType
+    {
+        CivilEnginner = 0,
+        Archer = 1,
+        Warrior = 2
+    }
+    public enum AudioType
+    {
+        Master,
+        Music,
+        SoundEffect
+    }
+
+    [Serializable]
+    public struct BuildTable
+    {
+        public ResourceType type;
+        public int quantity;
     }
 
     [Serializable]

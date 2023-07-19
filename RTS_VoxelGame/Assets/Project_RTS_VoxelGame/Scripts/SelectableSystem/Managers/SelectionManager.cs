@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 namespace NekraliusDevelopmentStudio
 {
@@ -20,6 +19,12 @@ namespace NekraliusDevelopmentStudio
         public SerializableDictionary<int, GameObject> selectedTable = new SerializableDictionary<int, GameObject>();
         
         private InputManager inputManager => InputManager.Instance;
+
+        public GameObject mouseFollower;
+        public float xOffset = 1f;
+        public float yOffset = 1f;
+
+        public bool isOverSelectable = false;
 
         private void AddSelected(GameObject selectedObject)
         {
@@ -51,6 +56,23 @@ namespace NekraliusDevelopmentStudio
 
         public void SelectAction()
         {
+            Ray mouseRay = inputManager.mainSceneCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(mouseRay, out RaycastHit mouseHit, 50000.0f))
+            {
+                if (mouseHit.transform.GetComponent<Selectable>())
+                {
+                    Vector3 mousePos = Input.mousePosition;
+                    Vector3 newPos = new Vector3(mousePos.x + xOffset, mousePos.y + yOffset, 0);
+
+                    mouseFollower.transform.position = newPos;
+                    mouseFollower.SetActive(true);
+                }
+                else
+                {
+                    mouseFollower.SetActive(false);
+                }
+            }
+
             if (ModeManager.Instance.IsOnState(ModeType.ViewMode))
             {
                 if (Input.GetMouseButtonDown(0))
@@ -77,6 +99,7 @@ namespace NekraliusDevelopmentStudio
                     }
                 }
             }
+
         }
         private void Update() => SelectAction();
     }

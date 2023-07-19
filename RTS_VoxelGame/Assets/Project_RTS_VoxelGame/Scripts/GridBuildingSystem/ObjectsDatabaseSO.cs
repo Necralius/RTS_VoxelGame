@@ -26,5 +26,6 @@ namespace NekraliusDevelopmentStudio
         public int ID;
         public Vector2Int Size;
         public GameObject prefab;
+        public List<BuildTable> buildNeeds;
     }
 }

@@ -11,6 +11,11 @@ namespace NekraliusDevelopmentStudio
         //State: Functional
         //This code represents an build preview system, that shows an structure ghost preview on an building placement process.
 
+        #region - Singleton Pattern -
+        public static BuildingPreviewSystem Instance;
+        private void Awake() => Instance = this;
+        #endregion
+
         #region - Preview Data -
         private float previewYOffset = 0.06f;
 
@@ -22,6 +27,9 @@ namespace NekraliusDevelopmentStudio
         private Material previewMaterialInstance;
 
         private Renderer cellIndicatorRenderer;
+        public Vector3 currentEulerAngles;
+
+        public ObjectData currentData;
         #endregion
 
         //================================Methods================================//
@@ -37,14 +45,17 @@ namespace NekraliusDevelopmentStudio
         #endregion
 
         #region - Placement Preview Show Interaction Start -
-        public void ShowPlacementPreview(GameObject Prefab, Vector2Int Size)
+        public void ShowPlacementPreview(ObjectData objectData)
         {
             //This method instatiate the preview object and calls the cursor object set, also the method activate the cell indicator.
 
-            previewObject = Instantiate(Prefab);
+            previewObject = Instantiate(objectData.prefab);
+            currentEulerAngles = previewObject.transform.eulerAngles;
+
             SetPreview(previewObject);
-            SetCursor(Size);
+            SetCursor(objectData.Size);
             cellIndicator.SetActive(true);
+            currentData = objectData;
         }
         #endregion
 
@@ -66,11 +77,19 @@ namespace NekraliusDevelopmentStudio
         {
             //This method sets the object preview cursor size to the object size. Also the method verifies if the size is greater than zero, so the system can proceed, if is not, the system will do nothing.
 
-            if (Size.x > 0 || Size.y > 0)
+            if (Size.x > 0 && Size.y > 0)
             {
                 cellIndicator.transform.localScale = new Vector3(Size.x, 1, Size.y);
                 cellIndicatorRenderer.material.mainTextureScale = Size;
             }
+        }
+        private void RotatePreviewObject()
+        {
+            cellIndicator.transform.eulerAngles += new Vector3(0, 360 / 4, 0);
+            currentEulerAngles = previewObject.transform.eulerAngles += new Vector3(0, 360 / 4, 0);
+
+            if (currentEulerAngles.y == 90) currentData.Size = new Vector2Int(currentData.Size.y, currentData.Size.x);
+            else currentData.Size = new Vector2Int(currentData.Size.x, currentData.Size.y);
         }
         #endregion
 
@@ -99,7 +118,6 @@ namespace NekraliusDevelopmentStudio
             /*This method updates the preview object and cursor position, also updating they feedback color considering they actual validity.
              * Also the method prevent the preview object executing if the system doesn't have an valid preview object reference, so preventing any further bugs.
              */
-
             if (previewObject != null)
             {
                 MovePreview(position);
@@ -107,6 +125,10 @@ namespace NekraliusDevelopmentStudio
             }
             MoveCursor(position);
             CursorFeedbackColorSet(validity);
+        }
+        private void Update()
+        {
+            if (ModeManager.Instance.IsOnState(ModeType.BuildPlacementMode) && Input.GetKeyDown(KeyCode.R)) RotatePreviewObject();
         }
 
         //The below methods sets the preview object position and the cursor position to the position passed as an argument. 

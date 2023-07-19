@@ -42,7 +42,7 @@ namespace NekraliusDevelopmentStudio
 
                 selectedObjectIndex = objectDatabase.objectsData.FindIndex(data => data.ID == ID);
 
-                if (selectedObjectIndex > -1) previewSystem.ShowPlacementPreview(objectDatabase.objectsData[selectedObjectIndex].prefab, objectDatabase.objectsData[selectedObjectIndex].Size);
+                if (selectedObjectIndex > -1) previewSystem.ShowPlacementPreview(objectDatabase.objectsData[selectedObjectIndex]);
                 else throw new System.Exception($"No object with ID: {iD}");
             }
             #endregion
@@ -64,16 +64,18 @@ namespace NekraliusDevelopmentStudio
                  */
 
                 bool placementValidity = CheckPlacementValidity(gridPosition, selectedObjectIndex);
+                bool priceValidity = ResourceManager.Instance.CheckForBuild(objectDatabase.objectsData[ID].buildNeeds);
 
-                if (!placementValidity) return;
+                if (!placementValidity || !priceValidity) return;
 
-                int index = objectPlacer.PlaceObject(objectDatabase.objectsData[selectedObjectIndex].prefab, grid.CellToWorld(gridPosition));
+                int index = objectPlacer.PlaceObject(objectDatabase.objectsData[selectedObjectIndex].prefab, grid.CellToWorld(gridPosition), BuildingPreviewSystem.Instance.currentEulerAngles);
 
                 ObjectGridData selectedData = objectDatabase.objectsData[selectedObjectIndex].ID == 0 ? floorData : furnitureData;
 
-                selectedData.AddObjectAt(gridPosition, objectDatabase.objectsData[selectedObjectIndex].Size, objectDatabase.objectsData[selectedObjectIndex].ID, index);
+                selectedData.AddObjectAt(gridPosition, objectDatabase.objectsData[selectedObjectIndex], index);
 
                 previewSystem.UpdatePosition(grid.CellToWorld(gridPosition), false);
+                AudioManager.Instance.PlayClip(AudioManager.Instance.audioDatabase.GetClip("PlaceStructure"), AudioType.SoundEffect);
             }
             private bool CheckPlacementValidity(Vector3Int gridPosition, int selectedObjectIndex)
             {
@@ -149,6 +151,7 @@ namespace NekraliusDevelopmentStudio
                 if (selectedData == null)
                 {
                     //Cant remove structure
+                    AudioManager.Instance.PlayClip(AudioManager.Instance.audioDatabase.GetClip(""), AudioType.SoundEffect);
                     return;
                 }
                 else
@@ -157,6 +160,7 @@ namespace NekraliusDevelopmentStudio
 
                     if (gameObjectIndex == -1) return;
 
+                    AudioManager.Instance.PlayClip(AudioManager.Instance.audioDatabase.GetClip("RemoveStructure"), AudioType.SoundEffect);
                     selectedData.RemoveObjectAt(gridPosition);
                     objectPlacer.RemoveObjectAt(gameObjectIndex);
                 }
@@ -184,7 +188,7 @@ namespace NekraliusDevelopmentStudio
         #region - Object Grid Data -
         public class ObjectGridData
         {
-            /* This classe represents an Layer of placed structures, the class holds an dictionary of placedObjects and some methods that represents the structure 
+            /* This class represents an Layer of placed structures, the class holds an dictionary of placedObjects and some methods that represents the structure 
              * layer interaction.
              * 
              * CalculatePositions -> This method receive some data like the object startPosition and his size, later the method makes an loop of the object size on X float
@@ -204,16 +208,17 @@ namespace NekraliusDevelopmentStudio
             Dictionary<Vector3Int, PlacementData> placedObjects = new();
 
             #region - Structure Add -
-            public void AddObjectAt(Vector3Int gridPos, Vector2Int objectSize, int id, int objectIndex)
+            public void AddObjectAt(Vector3Int gridPos, ObjectData objectData, int objectIndex)
             {
-                List<Vector3Int> positionsToOccupy = CalculatePositions(gridPos, objectSize);
-                PlacementData data = new PlacementData(positionsToOccupy, id, objectIndex);
+                List<Vector3Int> positionsToOccupy = CalculatePositions(gridPos, objectData.Size);
+                PlacementData data = new PlacementData(positionsToOccupy, objectData.ID, objectIndex);
                 foreach (var pos in positionsToOccupy)
                 {
                     if (placedObjects.ContainsKey(pos)) throw new Exception($"Dictionary already contains this cell position {pos}");
                     placedObjects[pos] = data;
                 }
             }
+            public void ResetGrid() => placedObjects.Clear();
             #endregion
 
             #region - Map Position Calculation -

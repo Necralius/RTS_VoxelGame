@@ -7,6 +7,9 @@ using Random = UnityEngine.Random;
 using static NekraliusDevelopmentStudio.NDS_Utility;
 using static NekraliusDevelopmentStudio.BuildingSystemUtility;
 using Unity.AI.Navigation;
+using UnityEditor;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
+using UnityEngine.Rendering;
 
 namespace NekraliusDevelopmentStudio
 {
@@ -36,7 +39,8 @@ namespace NekraliusDevelopmentStudio
         private float[,] noiseMap;
         private float[,] falloffMap;
 
-        private Mesh mesh;
+        private Mesh mapMesh;
+        private Mesh edgeMesh;
         private MeshFilter meshFilter;
         private MeshCollider meshCollider;
         private MeshRenderer meshRenderer;
@@ -52,15 +56,89 @@ namespace NekraliusDevelopmentStudio
         public NavMeshSurface surface;
         #endregion
 
+        public TerrainState terrainState = TerrainState.NewGeneration;
+        [HideInInspector] public Color[] mapTexture;
+
         //================================Methods================================//
 
+        public (Mesh, Mesh) GetMapMeshData() => (mapMesh, edgeMesh);
+
         #region - BuiltIn Methods -
-        private void Start()
+        public void StartMapInstance()
         {
-            GenerateCompleteMap();
+            Debug.Log("Generation World");
+            if (terrainState.Equals(TerrainState.NewGeneration)) GenerateCompleteMap();
+            else if (terrainState.Equals(TerrainState.SaveLoading)) LoadMap(SaveManager.Instance.gameData);
+        }
+        public void LoadMap(GameStateData data)
+        {
+            #region - Terrain Mesh Load -
+            if (mapMesh == null) mapMesh = new Mesh();
+
+            mapMesh.vertices = data.mapCompleteData.terrainMeshData.vertices.ToArray();
+            mapMesh.triangles = data.mapCompleteData.terrainMeshData.triangles.ToArray();
+            mapMesh.uv = data.mapCompleteData.terrainMeshData.uvs.ToArray();
+            mapMesh.RecalculateNormals();
+
+            UpdateMesh();
+            #endregion
+
+            #region - Edge Mesh Load -
+            Mesh mesh = new Mesh();
+
+            mesh.vertices = data.mapCompleteData.edgeMeshData.vertices.ToArray();
+            mesh.triangles = data.mapCompleteData.edgeMeshData.triangles.ToArray();
+            mesh.RecalculateNormals();
+
+            //The method also verifies if the edge gameobject is null, if it is the method creates the gameobject from scratch, adding his needed components and assinging the mesh needed data.
+
+            if (edgeObject == null) edgeObject = new GameObject("EdgeMesh");
+
+            //Also the method resets the edge object position, so that he stays in the same position of the map gameobject.
+            edgeObject.transform.SetParent(transform);
+            edgeObject.transform.position = Vector3.zero;
+
+            if (!edgeObject.GetComponent<MeshFilter>())
+            {
+                MeshFilter meshFilter = edgeObject.AddComponent<MeshFilter>();
+                meshFilter.mesh = mesh;
+            }
+            else edgeObject.GetComponent<MeshFilter>().mesh = mesh;
+
+            if (!edgeObject.GetComponent<MeshRenderer>())
+            {
+                MeshRenderer meshRenderer = edgeObject.AddComponent<MeshRenderer>();
+                meshRenderer.material = edgeMaterial;
+            }
+            else edgeObject.GetComponent<MeshRenderer>().material = edgeMaterial;
+
+            if (!edgeObject.GetComponent<MeshCollider>())
+            {
+                meshCollider = edgeObject.AddComponent<MeshCollider>();
+                meshCollider.sharedMesh = mesh;
+            }
+            else edgeObject.GetComponent<MeshCollider>().sharedMesh = mesh;
+            edgeMesh = mesh;
+            #endregion
+
+            #region - Texture Load -
+            Texture2D mapTexture = new Texture2D(currentMap.size, currentMap.size, TextureFormat.RGBA32, false);
+
+            mapTexture.filterMode = FilterMode.Point;
+            mapTexture.SetPixels(data.mapCompleteData.textureColourMap);
+            mapTexture.Apply();
+
+            MeshRenderer currentMeshRenderer = gameObject.GetComponent<MeshRenderer>();
+            currentMeshRenderer.material = terrainMaterial;
+            currentMeshRenderer.material.mainTexture = mapTexture;
+
+            #endregion
         }
         public void GenerateCompleteMap()
         {
+            BuildingSystem.Instance.floorData.ResetGrid();
+            BuildingSystem.Instance.structureData.ResetGrid();
+
             foreach(Transform objTrans in transform) Destroy(objTrans.gameObject);
 
             #region - Terrain Formation Data -
@@ -148,8 +226,8 @@ namespace NekraliusDevelopmentStudio
              * calculated and saved on lists, posteriorly the method pass all this data to the mesh and recalculate his normals, thus forming an complete map mesh.
              */
 
-            if (mesh != null) mesh.Clear();
-            else mesh = new Mesh();
+            if (mapMesh != null) mapMesh.Clear();
+            else mapMesh = new Mesh();
 
             int size = data.size;
 
@@ -184,19 +262,25 @@ namespace NekraliusDevelopmentStudio
                 }
             }
 
-            mesh.vertices = vertices.ToArray();
-            mesh.triangles = triangles.ToArray();
-            mesh.uv = uvs.ToArray();
-            mesh.RecalculateNormals();
+            mapMesh.vertices = vertices.ToArray();
+            mapMesh.triangles = triangles.ToArray();
+            mapMesh.uv = uvs.ToArray();
+            mapMesh.RecalculateNormals();
 
             //Also, some needed components are added to the object, like an mesh filter, and mesh renderer and a mesh collider, also the method assign the current mesh to this needed components.
+
+            UpdateMesh();
+        }
+
+        private void UpdateMesh()
+        {
 
             if (meshFilter == null) { meshFilter = gameObject.AddComponent<MeshFilter>(); }
             if (meshRenderer == null) { meshRenderer = gameObject.AddComponent<MeshRenderer>(); }
             if (meshCollider == null) { meshCollider = gameObject.AddComponent<MeshCollider>(); }
 
-            meshFilter.mesh = mesh;
-            meshCollider.sharedMesh = mesh;
+            meshFilter.mesh = mapMesh;
+            meshCollider.sharedMesh = mapMesh;
         }
         #endregion
 
@@ -325,6 +409,7 @@ namespace NekraliusDevelopmentStudio
                 meshCollider.sharedMesh = mesh;
             }
             else edgeObject.GetComponent<MeshCollider>().sharedMesh = mesh;
+            edgeMesh = mesh;
         }
         #endregion
 
@@ -393,7 +478,10 @@ namespace NekraliusDevelopmentStudio
             {
                 for (int x = 0; x < size; x++)
                 {
-                    float noiseValuue = Mathf.PerlinNoise(x * scale + xOffset, y * scale + yOffset);
+                    float sampleX = x * scale + xOffset;
+                    float sampleY = y * scale + yOffset;
+
+                    float noiseValuue = Mathf.PerlinNoise(sampleX, sampleY);
                     noiseMap[x, y] = noiseValuue;
                 }
             }
@@ -410,7 +498,9 @@ namespace NekraliusDevelopmentStudio
                     {
                         float v = Random.Range(0f, structure.density);
 
-                        if (noiseMap[x, y] < v)
+                        if (v <= 0) return;
+
+                        if (noiseMap[x, y] <= v)
                         {
                             cell.cellOcupied = true;
 
@@ -419,13 +509,13 @@ namespace NekraliusDevelopmentStudio
                             structureSpawned.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360f), 0);
                             structureSpawned.transform.localScale = Vector3.one * Random.Range(0.8f, 1.2f);
 
-                            ObjectsDatabaseSO objectDatabase = BuildingSystem.Instance.objectDatabase;
-
-                            int selectedObjIndex = BuildingSystem.Instance.objectDatabase.objectsData.FindIndex(data => data.ID == 99);
-
                             int index = ObjectPlacer.Instance.PlaceObject(structureSpawned);
-
-                            BuildingSystem.Instance.structureData.AddObjectAt(new Vector3Int(x, 0, y), new Vector2Int(1,1), 99, ObjectPlacer.Instance.PlaceObject(structureSpawned));
+                            int objectDataIndex = BuildingSystem.Instance.objectDatabase.objectsData.FindIndex(data => data.ID == structure.BuildingStructureID);
+                            
+                            ObjectData objectData = BuildingSystem.Instance.objectDatabase.objectsData[objectDataIndex];
+                            
+                            BuildingSystem.Instance.structureData.AddObjectAt(new Vector3Int(x, 0, y), objectData, index);
+                            //SaveManager.Instance.SaveStructure(structureSpawned);
                         }
                     }
                 }

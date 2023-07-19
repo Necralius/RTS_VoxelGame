@@ -14,8 +14,24 @@ namespace NekraliusDevelopmentStudio
         [HideInInspector] public float itemMinQuantity;
         [HideInInspector] public float itemMaxQuantity;
 
-        public int quantity;
-        
+        public ResourceType resourceType;
+
+        public float quantity;
+
         public bool GetWithRandomFactor;
+
+        public void OnResourceMine()
+        {
+            quantity = Random.Range(itemMinQuantity, itemMaxQuantity);
+            switch (resourceType)
+            {
+                case ResourceType.RawWood:
+                    ResourceManager.Instance.AddQuantity(quantity, resourceType);
+                    break;
+                case ResourceType.RawMetal:
+                    ResourceManager.Instance.AddQuantity(quantity, resourceType);
+                    break;
+            }
+        }
     }
 }
